@@ -1,0 +1,718 @@
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --surface-2: #f1f3f6;
+  --text: #16181d;
+  --muted: #6b7280;
+  --line: #e3e6ec;
+  --accent: #d92d20;
+  --accent-soft: #fdeceb;
+  --good: #17864a;
+  --good-soft: #e6f6ec;
+  --bad: #8f1d14;
+  --bad-soft: #f8e3e1;
+  --radius: 14px;
+  --shadow: 0 1px 2px rgba(16, 24, 40, .04), 0 8px 24px rgba(16, 24, 40, .06);
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1115;
+    --surface: #171a21;
+    --surface-2: #1f232c;
+    --text: #e8eaf0;
+    --muted: #9aa3b2;
+    --line: #2a2f3a;
+    --accent: #ff6b5e;
+    --accent-soft: #3a1b18;
+    --good: #4ade80;
+    --good-soft: #14301f;
+    --bad: #ffb4a8;
+    --bad-soft: #4a1a16;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .35);
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+
+/* ── Topbar ─────────────────────────────────────────────── */
+.topbar {
+  position: sticky; top: 0; z-index: 30;
+  display: flex; align-items: center; gap: 20px;
+  padding: max(12px, env(safe-area-inset-top)) max(28px, env(safe-area-inset-right))
+           12px max(28px, env(safe-area-inset-left));
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  backdrop-filter: saturate(180%) blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 650; }
+.brand-mark {
+  display: grid; place-items: center;
+  width: 30px; height: 30px; border-radius: 9px;
+  background: var(--accent); color: #fff;
+  font-size: 13px; font-weight: 700; letter-spacing: .5px;
+}
+.brand-name { font-size: 17px; letter-spacing: -.2px; }
+
+.search-wrap[hidden] { display: none; }
+.search-wrap {
+  position: absolute; inset: 0; z-index: 2;
+  display: flex; align-items: center;
+  padding: 10px max(16px, env(safe-area-inset-right)) 10px max(16px, env(safe-area-inset-left));
+  background: var(--surface);
+}
+.search-box {
+  position: relative;
+  display: flex; align-items: center; gap: 8px;
+  width: min(720px, 100%); margin: 0 auto;
+}
+#search {
+  flex: 1; min-width: 0; padding: 9px 14px;
+  border: 1px solid var(--line); border-radius: 10px;
+  background: var(--surface-2); color: var(--text);
+  font: inherit; font-size: 14px;
+}
+#search:focus { outline: 2px solid var(--accent); outline-offset: -1px; background: var(--surface); }
+.search-results {
+  position: absolute; top: calc(100% + 10px); left: 0; right: 0;
+  max-height: 60vh; overflow: auto;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 12px; box-shadow: var(--shadow); padding: 6px;
+}
+.search-results a {
+  display: block; padding: 8px 10px; border-radius: 8px; font-size: 14px;
+}
+.search-results a:hover, .search-results a.active { background: var(--accent-soft); }
+.search-results .sr-path { color: var(--muted); font-size: 12px; }
+.search-results .sr-empty { padding: 10px; color: var(--muted); font-size: 14px; }
+
+.topnav { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.icon-btn {
+  display: grid; place-items: center;
+  width: 36px; height: 36px; padding: 0;
+  border: 0; border-radius: 9px; background: none;
+  color: var(--muted); font-size: 14px; cursor: pointer;
+}
+.icon-btn:hover { background: var(--surface-2); color: var(--text); }
+.icon-btn .icon { width: 19px; height: 19px; }
+.topnav a {
+  padding: 7px 12px; border-radius: 9px; font-size: 14px; color: var(--muted);
+}
+.topnav a:hover { background: var(--surface-2); color: var(--text); }
+
+/* ── Layout ─────────────────────────────────────────────── */
+.app { max-width: 760px; margin: 0 auto; padding: 32px 24px 96px; }
+
+.crumbs { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 12px; margin-bottom: 14px; }
+.crumbs .back {
+  display: inline-flex; align-items: center; gap: 4px;
+  min-height: 34px; margin-left: -8px; padding: 4px 10px 4px 6px;
+  border-radius: 9px; color: var(--accent); font-size: 15px; font-weight: 500;
+}
+.crumbs .back:hover { background: var(--accent-soft); }
+.back-chevron { font-size: 21px; line-height: 1; margin-top: -2px; }
+.crumbs-path { display: none; font-size: 13px; color: var(--muted); }
+.crumbs-path a:hover { color: var(--accent); }
+.crumbs-path .sep { opacity: .5; margin: 0 6px; }
+
+/* The back button is always there — as a home-screen app there is no address
+   bar behind it. Wide screens have room to show the whole path next to it. */
+@media (min-width: 860px) {
+  .crumbs-path { display: inline; }
+}
+
+.page-title { font-size: 30px; line-height: 1.25; letter-spacing: -.5px; margin: 0 0 6px; }
+.page-sub { color: var(--muted); margin: 0 0 28px; }
+
+/* ── Rows (inset grouped list, as in iOS Settings) ── */
+.list-label {
+  font-size: 12px; font-weight: 650; letter-spacing: .8px; text-transform: uppercase;
+  color: var(--muted); margin: 28px 0 8px; padding: 0 4px;
+}
+.list-label:first-of-type { margin-top: 0; }
+.list {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.row {
+  display: flex; align-items: center; gap: 14px;
+  min-height: 60px; padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  transition: background .12s ease;
+}
+.row:last-child { border-bottom: none; }
+.row:hover, .row:active { background: var(--surface-2); }
+.row-icon {
+  flex: none; display: grid; place-items: center;
+  width: 34px; height: 34px; border-radius: 9px;
+  background: var(--accent-soft); font-size: 18px; line-height: 1;
+  color: var(--accent);
+}
+
+/* Stroked line icons: one shared look for rows and headings. */
+.icon {
+  width: 20px; height: 20px;
+  fill: none; stroke: currentColor; stroke-width: 1.6;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.title-icon {
+  width: 26px; height: 26px; stroke-width: 1.5;
+  color: var(--accent); vertical-align: -3px; margin-right: 10px;
+}
+.row-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.row-title { font-size: 16px; font-weight: 550; letter-spacing: -.1px; }
+.row-sub {
+  font-size: 13.5px; color: var(--muted);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.row-meta { flex: none; font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.row-chevron { flex: none; color: var(--muted); font-size: 20px; line-height: 1; opacity: .5; }
+
+.hint { color: var(--muted); font-size: 13.5px; margin-top: 24px; text-align: center; }
+kbd {
+  font-family: var(--mono); font-size: 12px;
+  padding: 2px 6px; border: 1px solid var(--line); border-bottom-width: 2px;
+  border-radius: 5px; background: var(--surface);
+}
+
+.section-title {
+  font-size: 12px; font-weight: 650; letter-spacing: 1.2px; text-transform: uppercase;
+  color: var(--muted); margin: 36px 0 12px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--line);
+}
+
+/* Note on a group page (Passive: Used for / Formula). */
+.notes {
+  background: var(--surface-2); border-left: 3px solid var(--accent);
+  border-radius: 8px; padding: 12px 14px; margin: 16px 0; font-size: 14.5px;
+}
+
+/* ── Buttons & inputs ───────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 18px; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--surface); color: var(--text);
+  font: inherit; font-size: 14.5px; font-weight: 550; cursor: pointer;
+  transition: background .12s ease, border-color .12s ease;
+}
+/* display on a class beats the browser's [hidden] rule, so restore it. */
+.btn[hidden] { display: none; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.primary:hover { filter: brightness(1.06); }
+.btn.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.btn.small { padding: 6px 12px; font-size: 13px; }
+.btn:disabled { opacity: .55; cursor: default; }
+
+.input, textarea.input {
+  width: 100%; padding: 10px 13px;
+  border: 1px solid var(--line); border-radius: 10px;
+  background: var(--surface); color: var(--text); font: inherit; font-size: 15px;
+}
+.input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+
+/* ── Checkbox group (topics of the examples) ────────────── */
+.checks { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.check {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--surface); cursor: pointer;
+}
+.check:hover { border-color: var(--accent); }
+.check:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.check input { flex: none; width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--accent); }
+.check-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.check-title { font-size: 14.5px; font-weight: 500; }
+.check-sub { font-size: 12.5px; color: var(--muted); line-height: 1.35; }
+select.input {
+  appearance: none; cursor: pointer; padding-right: 34px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+                    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+textarea.input { min-height: 88px; resize: vertical; line-height: 1.5; }
+/* A row of buttons or inputs; .row is the list row and means something else. */
+.actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+/* ── Practice panel ─────────────────────────────────────── */
+.practice { margin-top: 36px; }
+/* Переключатель тем: мелкие кнопки в одну полосу, панель вплотную под ними. */
+/* Схемы правил таблицей: слева конструкция, справа смысл и пример. */
+.rule-grid { display: grid; }
+.rule-row {
+  display: grid; grid-template-columns: minmax(130px, 210px) 1fr; gap: 4px 18px;
+  padding: 10px 0; border-top: 1px solid var(--line);
+}
+.rule-row:first-child { border-top: none; padding-top: 0; }
+.rr-en {
+  font-family: var(--mono); font-size: 12.5px; font-weight: 650;
+  color: var(--accent); line-height: 1.45; overflow-wrap: anywhere;
+}
+.rr-ru { font-size: 14.5px; line-height: 1.45; }
+
+/*
+ * Телефон: правило читается сверху вниз — схема, смысл, пример. Пример
+ * отбит полоской: это то, что проговариваешь вслух, он не должен теряться.
+ */
+@media (max-width: 720px) {
+  .rule-row { grid-template-columns: 1fr; gap: 3px; padding: 12px 0; }
+  .rr-en { font-size: 13px; }
+  .rr-ru { font-size: 15px; }
+  .rr-ex {
+    margin-top: 5px; padding-left: 10px; color: var(--text);
+    border-left: 2px solid var(--accent-soft); font-size: 14px;
+  }
+  .note-grid .rr-ru { font-size: 14px; }
+}
+
+.modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 16px; }
+/* The form that actually fits the phrase, so the eye finds it first. */
+.gen-item.fits { border-left: 3px solid var(--good); margin-left: -13px; padding-left: 10px; }
+.gen-item.fits .gen-label { color: var(--good); }
+
+.result { margin-top: 8px; }
+.result-card {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow);
+}
+.spinner {
+  display: inline-block; width: 15px; height: 15px;
+  border: 2px solid var(--line); border-top-color: var(--accent);
+  border-radius: 50%; animation: spin .7s linear infinite; vertical-align: -2px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading { color: var(--muted); display: flex; align-items: center; gap: 10px; padding: 8px 0; }
+
+.banner {
+  padding: 12px 16px; border-radius: 10px; font-size: 14.5px;
+  background: var(--bad-soft); color: var(--bad); border: 1px solid color-mix(in srgb, var(--bad) 30%, transparent);
+  display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap;
+}
+.banner a { text-decoration: underline; font-weight: 600; }
+
+.gen-item { padding: 12px 0; border-bottom: 1px solid var(--line); }
+.gen-item:last-child { border-bottom: none; padding-bottom: 0; }
+.gen-item:first-child { padding-top: 0; }
+.gen-en { font-size: 15.5px; }
+.gen-en b, .gen-en strong { color: var(--accent); font-weight: 620; }
+.gen-ru { color: var(--muted); font-size: 14px; }
+.gen-why { color: var(--muted); font-size: 13.5px; font-style: italic; margin-top: 3px; }
+.gen-label { font-family: var(--mono); font-size: 12px; color: var(--accent); text-transform: uppercase; letter-spacing: .6px; }
+.verdict { padding: 10px 12px; border-radius: 9px; margin-top: 8px; font-size: 14.5px; }
+.verdict.ok { background: var(--good-soft); color: var(--good); }
+.verdict.no { background: var(--bad-soft); color: var(--bad); }
+.verdict .expected { font-weight: 620; }
+.verdict .why { display: block; color: var(--text); margin-top: 6px; font-size: 14px; }
+
+.muted { color: var(--muted); }
+.empty { color: var(--muted); padding: 40px 0; text-align: center; }
+.stack > * + * { margin-top: 16px; }
+
+/* ── Phone ─────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .topbar { padding: 10px 14px; gap: 10px; }
+  .app { padding: 20px 14px 72px; }
+
+  .page-title { font-size: 24px; }
+  .page-sub { margin-bottom: 20px; }
+
+  /* Full-width lists, as an inset grouped list does on narrow screens */
+  .list { border-radius: 12px; }
+  .row { min-height: 56px; padding: 12px 14px; }
+  .row-sub { white-space: normal; }
+
+  /*
+   * Блоки кода на телефоне переносятся по словам, а не уезжают вбок:
+   * возить страницу пальцем ради хвоста строки — худшее из решений.
+   * Примеры при этом написаны короткими строками, чтобы перенос срабатывал
+   * редко и схемы не разъезжались.
+   */
+  .code pre, .td-example {
+    font-size: 11.5px; white-space: pre-wrap; overflow-wrap: anywhere; overflow-x: visible;
+  }
+
+  .modes { grid-template-columns: 1fr 1fr; }
+  /* An odd last button stretches instead of sitting half-width on its own row. */
+  .modes > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+  table.summary th, table.summary td { padding: 8px 10px; }
+}
+
+/* Wide tables scroll inside themselves instead of stretching the page */
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* ── PWA on iPhone ─────────────────────────────────────── */
+/*
+ * Runs both as a Safari tab and as a home-screen app: safe areas, 16px inputs
+ * (below that iOS zooms the page on focus) and finger-sized tap targets.
+ */
+html { -webkit-text-size-adjust: 100%; }
+body { min-height: 100svh; overscroll-behavior-y: none; }
+* { -webkit-tap-highlight-color: transparent; }
+
+@media (max-width: 640px) {
+  .topbar {
+    padding-top: max(10px, env(safe-area-inset-top));
+    padding-left: max(14px, env(safe-area-inset-left));
+    padding-right: max(14px, env(safe-area-inset-right));
+  }
+  .app {
+    padding-left: max(14px, env(safe-area-inset-left));
+    padding-right: max(14px, env(safe-area-inset-right));
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
+  }
+
+  /* 16px is the threshold below which Safari zooms on focus. */
+  #search, .input, textarea.input { font-size: 16px; }
+
+  .btn { padding: 12px 18px; min-height: 44px; }
+  .btn.small { padding: 8px 12px; min-height: 36px; }
+  .topnav a { padding: 9px 10px; font-size: 13.5px; }
+  .search-results { max-height: 55vh; }
+}
+
+/* Launched from the home screen: no address bar, so the header needs room. */
+@media (display-mode: standalone) {
+  .topbar { padding-top: max(14px, env(safe-area-inset-top)); }
+}
+
+/* ── Toast ─────────────────────────────────────────────── */
+.toast {
+  position: fixed; z-index: 100;
+  left: 50%; bottom: calc(24px + env(safe-area-inset-bottom));
+  transform: translate(-50%, 12px);
+  max-width: min(420px, calc(100vw - 32px));
+  padding: 12px 18px; border-radius: 12px;
+  background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow);
+  color: var(--text); font-size: 14.5px; text-align: center;
+  opacity: 0; transition: opacity .2s ease, transform .2s ease;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ── Install banner and iOS sheet ───────────────────────── */
+.install-bar {
+  position: fixed; z-index: 90;
+  left: 50%; bottom: calc(16px + env(safe-area-inset-bottom));
+  transform: translate(-50%, 16px);
+  display: flex; align-items: center; gap: 12px;
+  width: min(560px, calc(100vw - 24px));
+  padding: 12px 14px; border-radius: 14px;
+  background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow);
+  opacity: 0; transition: opacity .22s ease, transform .22s ease;
+}
+.install-bar.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* Room for the banner so it never covers the last row. */
+body:has(.install-bar) .app { padding-bottom: calc(150px + env(safe-area-inset-bottom)); }
+.install-icon {
+  flex: none; display: grid; place-items: center;
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--accent-soft); color: var(--accent);
+}
+.install-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.install-text b { font-size: 15px; font-weight: 600; white-space: nowrap; }
+.install-text .muted { font-size: 13px; }
+.install-close {
+  flex: none; width: 30px; height: 30px; padding: 0;
+  border: 0; border-radius: 8px; background: none;
+  color: var(--muted); font-size: 14px; cursor: pointer;
+}
+.install-close:hover { background: var(--surface-2); color: var(--text); }
+
+@media (max-width: 480px) {
+  .install-text .muted { display: none; }
+  .install-text b { font-size: 14.5px; }
+  .install-bar { gap: 10px; padding: 10px 12px; }
+  .install-bar .btn { padding: 9px 14px; min-height: 38px; font-size: 14px; }
+}
+
+.sheet-backdrop {
+  position: fixed; inset: 0; z-index: 100;
+  display: grid; place-items: end center;
+  background: rgba(16, 24, 40, .45);
+  opacity: 0; transition: opacity .2s ease;
+}
+.sheet-backdrop.show { opacity: 1; }
+.sheet {
+  display: flex; flex-direction: column; gap: 18px;
+  width: min(460px, 100%);
+  margin: 0 0 max(16px, env(safe-area-inset-bottom));
+  padding: 22px;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 18px; box-shadow: var(--shadow);
+  transform: translateY(12px); transition: transform .22s ease;
+}
+.sheet-backdrop.show .sheet { transform: translateY(0); }
+.sheet-title { font-size: 19px; font-weight: 620; letter-spacing: -.2px; }
+
+.steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.steps li { display: flex; align-items: center; gap: 12px; font-size: 15px; line-height: 1.4; }
+.step-num {
+  flex: none; display: grid; place-items: center;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  font-size: 13px; font-weight: 650;
+}
+.step-icon {
+  flex: none; display: grid; place-items: center;
+  width: 34px; height: 34px; border-radius: 9px;
+  background: var(--accent-soft); color: var(--accent);
+}
+
+@media (min-width: 640px) {
+  .sheet-backdrop { place-items: center; }
+  .sheet { margin: 0; }
+}
+
+/* ── Collapsible help (how to get an API key) ───────────── */
+.help { margin-top: 10px; font-size: 13.5px; }
+.help > summary {
+  cursor: pointer; color: var(--accent); width: fit-content;
+  list-style: none; padding: 2px 0;
+}
+.help > summary::-webkit-details-marker { display: none; }
+.help > summary::before { content: '›'; display: inline-block; margin-right: 6px; transition: transform .15s ease; }
+.help[open] > summary::before { transform: rotate(90deg); }
+.help-steps {
+  margin: 10px 0 0; padding: 14px 16px 14px 34px;
+  background: var(--surface-2); border-radius: 10px;
+  display: flex; flex-direction: column; gap: 8px;
+  line-height: 1.5;
+}
+.help-steps li::marker { color: var(--muted); }
+.help a { color: var(--accent); text-decoration: underline; }
+.help code { font-family: var(--mono); font-size: 12.5px; background: var(--accent-soft); color: var(--accent); padding: 1px 5px; border-radius: 5px; }
+.help > .muted { margin: 8px 0 0; font-size: 13px; }
+
+/* ── Review cards ───────────────────────────────────────── */
+.rv-card {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 32px 24px; text-align: center; min-height: 200px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+}
+.rv-back { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 18px; }
+.rv-back[hidden] { display: none; }
+.rv-actions { display: flex; justify-content: center; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+.rv-actions .btn { min-width: 130px; }
+.hint#rv-hint { text-align: center; margin-top: 14px; }
+
+@media (max-width: 640px) {
+  .rv-card { padding: 28px 18px; }
+  .rv-actions .btn { flex: 1; min-width: 0; }
+}
+
+/* CEFR level next to a word. */
+.level {
+  display: inline-block; vertical-align: middle;
+  margin-left: 8px; padding: 2px 7px;
+  border-radius: 6px; background: var(--accent-soft); color: var(--accent);
+  font-family: var(--mono); font-size: 11.5px; font-weight: 650;
+  letter-spacing: .3px; line-height: 1.5;
+}
+
+/* CEFR level of a written answer, inside the verdict. */
+.verdict .level-line .level { margin: 0 6px 0 4px; }
+
+/* ── Страница темы ──────────────────────────────────────── */
+.source { color: var(--muted); font-size: 13px; margin: -8px 0 18px; }
+.domain-tag {
+  display: inline-block; margin: -6px 0 18px; padding: 4px 10px;
+  border-radius: 999px; background: var(--accent-soft); color: var(--accent);
+  font-family: var(--mono); font-size: 12px; font-weight: 650;
+}
+
+/* Термин: слово крупно, перевод рядом, под ними — когда он к месту. */
+.terms { display: grid; gap: 10px; }
+.term {
+  padding: 12px 14px; background: var(--surface);
+  border: 1px solid var(--line); border-radius: 12px;
+}
+.term.known { border-color: color-mix(in srgb, var(--good) 45%, var(--line)); }
+.term-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.term-head code {
+  font-family: var(--mono); font-size: 15px; font-weight: 650; color: var(--accent);
+}
+.term-ru { font-size: 14.5px; }
+.term-add { margin-left: auto; font-size: 19px; line-height: 1; color: var(--muted); }
+.term-add:hover { color: var(--accent); }
+.term.known .term-add { color: var(--good); }
+.term-note { color: var(--muted); font-size: 13.5px; margin-top: 6px; line-height: 1.5; }
+
+/* Команда копируется по клику: выделять текст пальцем — мучение. */
+.commands { display: grid; gap: 8px; }
+.cmd {
+  display: grid; gap: 3px; width: 100%; text-align: left; cursor: pointer;
+  padding: 11px 14px; background: var(--surface);
+  border: 1px solid var(--line); border-radius: 10px; font: inherit; color: inherit;
+}
+.cmd:hover { border-color: var(--accent); }
+.cmd code { font-family: var(--mono); font-size: 13.5px; color: var(--accent); overflow-wrap: anywhere; }
+.cmd-what { color: var(--muted); font-size: 13.5px; }
+
+.qa { display: grid; gap: 8px; }
+.qa-item {
+  padding: 12px 14px; background: var(--surface);
+  border: 1px solid var(--line); border-radius: 12px;
+}
+.qa-item > summary { cursor: pointer; font-size: 15px; list-style: none; }
+.qa-item > summary::-webkit-details-marker { display: none; }
+.qa-item > summary::before {
+  content: '›'; display: inline-block; margin-right: 8px; color: var(--muted);
+  transition: transform .15s ease;
+}
+.qa-item[open] > summary::before { transform: rotate(90deg); }
+.qa-answer { margin-top: 10px; color: var(--muted); font-size: 14.5px; line-height: 1.55; }
+
+.code { margin-bottom: 14px; }
+.code-title { font-size: 12.5px; color: var(--muted); margin-bottom: 6px; }
+.code pre {
+  margin: 0; padding: 14px; overflow-x: auto;
+  background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px;
+  font-family: var(--mono); font-size: 13px; line-height: 1.5;
+}
+
+.links { margin: 0; padding-left: 20px; }
+.links a { color: var(--accent); text-decoration: underline; }
+
+.deck-bar { margin: 24px 0 8px; align-items: center; }
+
+/* ── Вопросы с вариантами ───────────────────────────────── */
+.quiz-item { padding: 16px 0; border-bottom: 1px solid var(--line); }
+.quiz-item:last-of-type { border-bottom: none; }
+.quiz-topic {
+  font-family: var(--mono); font-size: 11.5px; letter-spacing: .6px;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 6px;
+}
+.quiz-q { font-size: 15.5px; line-height: 1.5; white-space: pre-line; }
+.quiz-options { display: grid; gap: 8px; margin-top: 12px; }
+.quiz-option {
+  text-align: left; cursor: pointer; font: inherit; font-size: 14.5px;
+  padding: 11px 14px; border-radius: 10px; color: inherit;
+  background: var(--surface-2); border: 1px solid var(--line);
+}
+.quiz-option:hover:not(:disabled) { border-color: var(--accent); }
+.quiz-option.ok { background: var(--good-soft); border-color: var(--good); color: var(--good); }
+.quiz-option.no { background: var(--bad-soft); border-color: var(--bad); color: var(--bad); }
+.quiz-option:disabled { cursor: default; }
+.quiz-why { margin-top: 10px; }
+.quiz-why[hidden] { display: none; }
+.practice-sub { margin: -4px 0 14px; }
+.check-q { font-size: 15.5px; margin: 8px 0 12px; }
+.gen-item.gap { border-left: 3px solid var(--muted); padding-left: 12px; }
+
+/* ── Мок-экзамен ────────────────────────────────────────── */
+.exam-score { font-size: 17px; font-weight: 620; margin: 6px 0 16px; }
+.exam-score.ok { color: var(--good); }
+.exam-score.no { color: var(--bad); }
+.runs { display: grid; gap: 6px; }
+.run {
+  display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  padding: 10px 14px; background: var(--surface);
+  border: 1px solid var(--line); border-radius: 10px; font-size: 14px;
+}
+.run-score { font-family: var(--mono); font-size: 13px; }
+.run-score.ok { color: var(--good); }
+.run-score.no { color: var(--bad); }
+
+/* ── Колода ─────────────────────────────────────────────── */
+.deck { display: grid; gap: 10px; }
+.deck-card {
+  padding: 14px 16px; background: var(--surface);
+  border: 1px solid var(--line); border-radius: 12px;
+}
+.deck-front { font-size: 15.5px; font-weight: 550; }
+.deck-back { color: var(--muted); font-size: 14px; margin-top: 6px; line-height: 1.5; }
+.deck-meta {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  margin-top: 10px; font-size: 12.5px; color: var(--muted);
+}
+.deck-meta a { color: var(--accent); }
+.deck-due { margin-left: auto; }
+
+/* ── Карточка повторения ────────────────────────────────── */
+.rv-front { font-size: 24px; font-weight: 620; letter-spacing: -.3px; line-height: 1.35; }
+.rv-answer { font-size: 17px; color: var(--accent); font-weight: 500; line-height: 1.5; }
+.rv-source { font-size: 12.5px; color: var(--muted); text-decoration: underline; }
+.rv-done .rv-front { color: var(--good); }
+
+@media (max-width: 640px) {
+  .rv-front { font-size: 21px; }
+  .deck-due { margin-left: 0; }
+}
+
+/* Тема-заглушка: честно говорим, что конспекта ещё нет. */
+.empty.stub { padding: 24px 0; font-size: 14.5px; }
+
+/* План страницы: что здесь будет, пока конспект не написан. */
+.outline { margin: 0; padding-left: 20px; color: var(--muted); }
+.outline li { margin: 6px 0; line-height: 1.5; }
+
+/* ── Страница термина ───────────────────────────────────── */
+.term-link { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; flex: 1; }
+.term-link:hover code { text-decoration: underline; }
+.term-page { margin-bottom: 28px; }
+.term-page-ru { font-size: 17px; color: var(--muted); margin: -6px 0 10px; }
+.term-page-note { font-size: 15.5px; line-height: 1.55; margin: 0 0 16px; }
+
+/* ── Схема на странице темы ─────────────────────────────── */
+.diagram {
+  margin: 0 0 28px; padding: 18px 16px;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+}
+/* Узкий экран: схема ужимается по ширине, а не уезжает за край. */
+.diagram svg { display: block; width: 100%; height: auto; color: var(--text); }
+.diagram figcaption { margin-top: 14px; font-size: 13.5px; line-height: 1.55; }
+.dg-caption { display: block; color: var(--text); margin-bottom: 8px; }
+/* Разбор схемы: по строке на элемент, читается рядом с картинкой. */
+.dg-read { margin: 0; padding-left: 18px; color: var(--muted); }
+.dg-read li { margin: 4px 0; }
+.diagram .dg-box { fill: var(--surface-2); stroke: var(--line); }
+.diagram .dg-accent { fill: var(--accent-soft); stroke: var(--accent); }
+.diagram .dg-line { stroke: var(--muted); fill: none; }
+.diagram .dg-strong { stroke: var(--accent); fill: none; }
+.diagram .dg-text { fill: currentColor; font-size: 12px; font-family: inherit; }
+.diagram .dg-sub { fill: var(--muted); font-size: 10.5px; font-family: inherit; }
+.diagram .dg-head { fill: var(--muted); }
+.diagram .dg-head-accent { fill: var(--accent); }
+.diagram .dg-accent-text { fill: var(--accent); font-size: 12px; font-family: inherit; font-weight: 600; }
+
+/* Описание термина старого формата — абзацами, пока страница не переведена. */
+.term-page-detail { font-size: 15.5px; line-height: 1.6; margin: 0 0 14px; }
+
+/* ── Описание термина по разделам ───────────────────────── */
+.term-detail { margin-bottom: 26px; }
+.td-part + .td-part { margin-top: 18px; }
+.td-label {
+  font-family: var(--mono); font-size: 11.5px; letter-spacing: .7px;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
+}
+.td-what { font-size: 16px; line-height: 1.55; margin: 0; }
+.td-text { font-size: 15px; line-height: 1.55; margin: 0; color: var(--muted); }
+.td-list { margin: 0; padding-left: 20px; }
+.td-list li { font-size: 15px; line-height: 1.55; margin: 7px 0; }
+.td-example {
+  margin: 0; padding: 12px 14px; overflow-x: auto;
+  background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px;
+  font-family: var(--mono); font-size: 13px; line-height: 1.5; white-space: pre-wrap;
+}
+/* Строка на запоминание: то единственное, что останется через месяц. */
+.td-remember {
+  margin: 18px 0 0; padding: 12px 14px;
+  background: var(--accent-soft); border-left: 3px solid var(--accent);
+  border-radius: 0 10px 10px 0; font-size: 15px; line-height: 1.5;
+}

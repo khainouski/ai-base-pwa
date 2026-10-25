@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>AI Base — учить и повторять AI</title>
+  <meta name="description" content="Личный конспект по AI, Claude и сертификации, карточки для повторения и практика с AI.">
+
+  <!-- Цвет статус-бара, под тему системы. -->
+  <meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1115" media="(prefers-color-scheme: dark)">
+
+  <!-- iOS: запуск с домашнего экрана без адресной строки. -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="AI Base">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/favicon-32.png" sizes="32x32">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#/">
+      <span class="brand-mark">AI</span>
+      <span class="brand-name">AI Base</span>
+    </a>
+    <nav class="topnav">
+      <a href="#/cards">Карточки</a>
+      <a href="#/settings">Настройки</a>
+      <button id="search-toggle" class="icon-btn" type="button" aria-label="Поиск" aria-expanded="false"></button>
+    </nav>
+    <div class="search-wrap" hidden>
+      <div class="search-box">
+        <input id="search" type="search" placeholder="Поиск темы, термина или команды…"
+               autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">
+        <button id="search-close" class="icon-btn" type="button" aria-label="Закрыть поиск">✕</button>
+        <div id="search-results" class="search-results" hidden></div>
+      </div>
+    </div>
+  </header>
+  <main id="app" class="app"></main>
+  <script type="module" src="js/router.js"></script>
+  <script type="module" src="js/pwa.js"></script>
+</body>
+</html>

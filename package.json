@@ -1,0 +1,9 @@
+{
+  "name": "ai-base-pwa",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Личный конспект по AI и Claude с карточками и практикой. PWA, без сборки.",
+  "scripts": {
+    "dev": "npx --yes serve@14 -l 3000 ."
+  }
+}
