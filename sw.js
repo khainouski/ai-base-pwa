@@ -8,7 +8,7 @@
  * API провайдеров → мимо кэша вообще.
  */
 
-const VERSION = 'v11';
+const VERSION = 'v12';
 const CACHE = `aibase-${VERSION}`;
 
 /** Документ оболочки кэшируется отдельно, см. precache. */

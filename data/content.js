@@ -25,7 +25,8 @@
  *   points   — [{ t, d }]           ключевая мысль и расшифровка
  *   terms    — [{ en, ru, note }]   термин → перевод → когда употребляется
  *   commands — [{ cmd, what }]      команда и что делает (копируется по клику)
- *   qa       — [{ q, a }]           вопрос на самопроверку и ответ
+ *   qa       — [{ q, a }]           вопрос на самопроверку (в контекст для AI)
+ *   check    — [{ q, a }]           проверочные вопросы по-английски, видны на странице
  *   code     — [{ title, body }]
  *   links    — [{ title, href }]
  *
@@ -3396,86 +3397,1146 @@ model: opus
       { q: 'Сколько нужно набрать?', a: '720 из 1000.' },
       { q: 'Какой домен самый тяжёлый по весу?', a: 'Domain 1 — Agentic Architecture & Orchestration, 27%.' },
     ],
+    check: [
+      { q: 'What score do you need to pass?', a: '720 out of 1000.' },
+      { q: 'Which domain carries the most weight?', a: 'Domain 1, Agentic Architecture and Orchestration, at 27%.' },
+      { q: 'Which two domains together make up almost half the exam?', a: 'Domain 1 (27%) and Domain 4, Prompt Engineering (20%).' },
+      { q: 'What does the exam actually test?', a: 'Judgment in scenarios — why one architecture fits a situation better than the alternatives, not recall of definitions.' },
+    ],
     links: [
       { title: 'Страница экзамена', href: 'https://anthropic-partners.skilljar.com/claude-certified-architect-foundations-certification/486716' },
       { title: 'План EPAM', href: 'https://leap.epam.com/sp/partners/anthropic/architect-foundation-certification' },
     ],
   },
-  'exam-rules': stub('Правила и формат', 'Как проходит сдача и что считается нарушением.', {
-    source: 'Anthropic Certification Exam Policy',
-    outline: ['Формат вопросов: сценарий и выбор лучшего варианта', 'Время, попытки, пересдача', 'Что считается нарушением'],
-  }),
+  'exam-rules': {
+    title: 'Правила и формат',
+    intro: 'Как устроены вопросы и что считается нарушением.',
+    source: 'Anthropic Certification Exam Policy · Exam Guide',
+    points: [
+      {
+        t: 'Вопросы сценарные, а не определения',
+        d: 'Дана ситуация — агент путается в инструментах, координатор теряет данные, прогон упал на середине — и четыре правдоподобных варианта. Выбирают лучший, а не единственно возможный.',
+      },
+      {
+        t: 'Неправильные варианты тоже работают',
+        d: 'Обычно три из четырёх вариантов решают задачу, просто хуже: дороже, менее надёжно, с лишним звеном. Выигрывает тот, кто объясняет, почему остальные хуже.',
+      },
+      {
+        t: 'Проходной балл — 720 из 1000',
+        d: 'Шкала не процент правильных ответов: вопросы взвешены по доменам. Поэтому важно не завалить тяжёлые домены целиком.',
+      },
+      {
+        t: 'Заучивание чужих вопросов не работает',
+        d: 'Формулировки на экзамене другие. Одинаковой остаётся только логика выбора, поэтому разбирают не ответ, а рассуждение.',
+      },
+      {
+        t: 'Часть тем прямо вне программы',
+        d: 'Computer use, автоматизация браузера, Claude in Chrome, OAuth и ротация ключей перечислены в Out-of-Scope. Время на них тратить не нужно.',
+      },
+    ],
+    check: [
+      { q: 'What kind of questions does the exam use?', a: 'Scenario questions: a situation plus four plausible options, where you pick the best one.' },
+      { q: 'Why are the wrong options still plausible?', a: 'Most of them would work — they are just worse: costlier, less reliable, or add an unnecessary component.' },
+      { q: 'What is the passing score?', a: '720 out of 1000, with questions weighted by domain.' },
+      { q: 'Why is memorizing recalled questions a poor strategy?', a: 'The wording on the real exam differs; only the reasoning behind the choice carries over.' },
+      { q: 'Name topics that are explicitly out of scope.', a: 'Computer use, browser automation, Claude in Chrome, OAuth and key rotation.' },
+    ],
+    links: [
+      { title: 'Страница экзамена', href: 'https://anthropic-partners.skilljar.com/claude-certified-architect-foundations-certification/486716' },
+    ],
+    qa: [
+      { q: 'Где точные правила проведения?', a: 'В PDF Anthropic Certification Exam Policy и Exam Guide из папки docs — там же список доменов и Out-of-Scope.' },
+    ],
+  },
 
   /* ── CCAR-F: курсы Partner Academy, по странице на курс ── */
-  'course-ai-fluency': stub('AI Fluency', 'Фреймворк 4D и базовые приёмы работы с моделью.', {
-    source: 'Partner Academy — AI Fluency',
-    outline: [
-      'Delegation: что отдать модели, что оставить себе',
-      'Description: как сформулировать задачу',
-      'Discernment: как проверять результат',
-      'Diligence: ответственность за то, что отдал дальше',
-      'Шесть базовых приёмов промптинга из курса',
+  'course-ai-fluency': {
+    title: 'AI Fluency',
+    intro: 'Фреймворк 4D. На самом экзамене не спрашивают — но язык курса задаёт.',
+    source: 'Partner Academy — AI Fluency · 1 ч 10 мин',
+    points: [
+      {
+        t: 'На CCAR-F этот материал не тестируется',
+        d: 'Проверено по тексту Exam Guide: ни fluency, ни Discernment, ни Diligence там не встречаются. Delegation встречается, но в смысле «делегирование подзадач субагентам» из домена 1.',
+      },
+      {
+        t: 'Определение состоит из четырёх наречий',
+        d: 'AI Fluency — умение работать с AI effectively, efficiently, ethically and safely. Их спрашивают именно набором, а не по отдельности.',
+      },
+      {
+        t: '4D — это последовательность, а не список',
+        d: 'Сначала решаешь, стоит ли поручать (Delegation) → объясняешь задачу (Description) → оцениваешь результат (Discernment) → отвечаешь за применение (Diligence).',
+      },
+      {
+        t: 'Внутри каждой компетенции есть подпонятие',
+        d: 'Product Description — что именно AI должен создать. Process Discernment — эффективен ли сам ход рассуждения. Transparency Diligence — честность о роли AI в твоей работе.',
+      },
+      {
+        t: 'Оценивают не только результат, но и путь',
+        d: 'Ответ может выглядеть правдоподобно, но быть получен неверным путём — и на следующей задаче тот же путь даст ошибку. Отсюда Process Discernment.',
+      },
+      {
+        t: 'Шесть приёмов промптинга пересекаются с доменом 4',
+        d: 'Дай контекст · покажи примеры · задай ограничения · разбей на шаги · попроси подумать · задай роль. Формулировки на экзамене не спросят, идеи — спросят.',
+      },
     ],
-  }),
-  'course-claude-101': stub('Claude 101', 'Продукт: разговор, проекты, артефакты, коннекторы.', {
-    source: 'Partner Academy — Claude 101',
-    outline: [
-      'Первый разговор и как получать лучший результат',
-      'Проекты: общий контекст для серии разговоров',
-      'Артефакты',
-      'Скиллы в продукте',
-      'Коннекторы, enterprise search, research',
-      'Что из курса берём на экзамен, а что нет',
+    terms: [
+      {
+        en: 'Delegation', ru: 'Делегирование',
+        note: 'Что поручить AI, а что оставить человеку.',
+        detail: {
+          what: 'Осознанный выбор границы между своей работой и работой модели.',
+          how: [
+            'Не «свалить всё на AI» и не «делать всё самому»: граница выбирается под каждую задачу.',
+            'Перед делегированием нужно понимать саму задачу — это Problem Awareness.',
+            'В экзаменационном смысле то же слово означает раздачу подзадач субагентам.',
+          ],
+          example: '',
+          mistake: 'Делегировать то, что сам не сформулировал. Непонятная задача возвращается непонятным результатом.',
+          remember: 'Сначала решаешь, стоит ли поручать, и только потом — как объяснить.',
+        },
+      },
+      {
+        en: 'Description', ru: 'Описание',
+        note: 'Как объяснить AI задачу. Внутри — Product Description.',
+        detail: {
+          what: 'Умение сформулировать задачу так, чтобы её поняли.',
+          how: [
+            'Product Description — чётко определить, что именно AI должен создать или предоставить.',
+            'Речь о результате: не «помоги с отчётом», а «таблица из трёх колонок с такими данными».',
+            'Приёмы — те же шесть техник из курса; подробно в разделе Prompt Engineering.',
+          ],
+          example: '',
+          mistake: 'Описывать процесс вместо результата. Модель начнёт помогать вообще, а не делать нужное.',
+          remember: 'Описывай результат, а не направление.',
+        },
+      },
+      {
+        en: 'Discernment', ru: 'Здравая оценка',
+        note: 'Можно ли доверять тому, что вернулось. Внутри — Process Discernment.',
+        detail: {
+          what: 'Критическая оценка выводов, процесса и поведения модели.',
+          how: [
+            'Оценивается не только ответ, но и путь к нему: Process Discernment.',
+            'Правдоподобный ответ, полученный неверным путём, повторит ошибку на следующей задаче.',
+            'Практическая сторона этого — в разделах Evaluation и Guardrails.',
+          ],
+          example: '',
+          mistake: 'Принимать ответ по уверенности изложения. Уверенность у модели одинаковая и когда она права, и когда нет.',
+          remember: 'Смотри не только что получилось, но и как.',
+        },
+      },
+      {
+        en: 'Diligence', ru: 'Добросовестность',
+        note: 'Ответственное использование, прозрачность, подотчётность.',
+        detail: {
+          what: 'Ответственность за то, как ты применил результат.',
+          how: [
+            'Transparency Diligence — быть открытым о роли AI перед теми, кому это важно знать.',
+            'Подотчётность: за результат отвечает человек, а не инструмент.',
+            'Это же рамка для вопросов безопасности и прав в агентных системах.',
+          ],
+          example: '',
+          mistake: 'Выдавать сделанное с AI за полностью свою работу там, где это имеет значение.',
+          remember: 'Инструмент не несёт ответственности — её несёшь ты.',
+        },
+      },
     ],
-  }),
-  'course-cc-101': stub('Claude Code 101', 'Что это, как устроено, ежедневные сценарии.', {
+    check: [
+      { q: 'What is AI Fluency?', a: 'The ability to work with AI effectively, efficiently, ethically, and safely.' },
+      { q: 'Which answer lists all four Ds correctly?', a: 'Delegation, Description, Discernment, Diligence.' },
+      { q: 'Which competency is about choosing what the AI does and what the human does?', a: 'Delegation.' },
+      { q: 'What is the core of the Diligence competency?', a: 'Responsible AI use, transparency, and accountability.' },
+      { q: 'What is Product Description within the Description competency?', a: 'Clearly defining what you want the AI to create or provide.' },
+      { q: 'Which competency covers critically evaluating AI outputs and behaviors?', a: 'Discernment.' },
+      { q: 'What is Process Discernment within Discernment?', a: 'Assessing whether the AI reasoning process and problem-solving approach is effective.' },
+      { q: 'What is Transparency Diligence within Diligence?', a: 'Being open and honest about the AI role in your work with those who need to know.' },
+      { q: 'Name the six prompting techniques taught in the course.', a: 'Give context, show examples, specify constraints, break complex tasks into steps, ask the AI to think first, define the AI role or tone.' },
+    ],
+    qa: [
+      { q: 'Спрашивают ли 4D на экзамене CCAR-F?', a: 'Нет. В тексте Exam Guide этих терминов нет; Delegation встречается только в смысле раздачи подзадач субагентам.' },
+    ],
+  },
+
+  'course-claude-101': {
+    title: 'Claude 101',
+    intro: 'Продукт целиком: промпты, проекты, артефакты, скиллы, коннекторы, research.',
+    source: 'Partner Academy — Claude 101 · 3 ч 06 мин',
+    points: [
+      {
+        t: 'Эффективный промпт состоит из трёх частей',
+        d: 'Setting the stage — твоя роль, цели и контекст. Defining the task — какое действие нужно. Specifying rules — стиль, тон, примеры. Этот список спрашивают прямо.',
+      },
+      {
+        t: 'Первый промпт — начало разговора, а не запрос',
+        d: 'Обратная связь должна быть конкретной: «убери первые два абзаца и сделай вывод action-oriented» работает лучше, чем «сделай короче». Ушло не туда — быстрее начать новый чат.',
+      },
+      {
+        t: 'Проект хранит знание, скилл выполняет процесс',
+        d: 'Мнемоника курса: знание — «что», процедура — «как». Проект даёт общий контекст для серии бесед, скилл применяется, когда вызван.',
+      },
+      {
+        t: 'База знаний проекта переключается на поиск',
+        d: 'Пока всё влезает в окно — грузится целиком. У предела Claude перестаёт грузить всё и начинает искать релевантное, расширяя ёмкость до десяти раз. Поэтому файлы называют описательно.',
+      },
+      {
+        t: 'Артефакт — самодостаточный результат',
+        d: 'Обычно больше пятнадцати строк, понятен без диалога, к нему вернутся. Word, Excel, PowerPoint и PDF артефактами не являются — это отдельная выдача файлов.',
+      },
+      {
+        t: 'Коннекторы видят ровно то, что видишь ты',
+        d: 'Доступ scoped под нужды коннектора, данные только твои, отзывается в любой момент. MCP здесь описывают как USB-C для AI: один стандарт вместо интеграции под каждое приложение.',
+      },
+      {
+        t: 'Research — это планирование, итеративный поиск, синтез и цитаты',
+        d: 'Четыре шага: разбить запрос, вести много связанных поисков, свести в отчёт, сослаться на источники. Та же архитектура, что у мультиагентного исследования из домена 1.',
+      },
+      {
+        t: 'Курс местами расходится с экзаменом',
+        d: 'Совет «спроси у Claude уровень уверенности» как триггер эскалации неверен: самооценка плохо откалибрована. Экзамен ждёт field-level confidence с порогом по размеченной выборке.',
+      },
+    ],
+    terms: [
+      {
+        en: 'Projects', ru: 'Проекты',
+        note: 'Хранят знание: материалы, инструкции и общий контекст для серии бесед.',
+        detail: {
+          what: 'Рабочее пространство с постоянным контекстом.',
+          how: [
+            'Три части при создании: Instructions, Context/Knowledge и задачи по расписанию.',
+            'Подходят для материалов, которые нужны многократно, и для общей работы команды.',
+            'У предела окна включается поиск по базе знаний вместо полной загрузки.',
+            'Имена файлов участвуют в поиске — называть описательно, а не document1.pdf.',
+          ],
+          example: '',
+          mistake: 'Сваливать в один проект всё подряд. Контекст перестаёт быть общим и начинает мешать.',
+          remember: 'Проект — это «что знать», а не «что делать».',
+        },
+      },
+      {
+        en: 'Artifacts', ru: 'Артефакты',
+        note: 'Самостоятельные интерактивные результаты в отдельном окне рядом с чатом.',
+        detail: {
+          what: 'Документы, код, страницы, диаграммы и компоненты, живущие отдельно от переписки.',
+          how: [
+            'Claude делает артефакт сам, когда результат самодостаточен и к нему вернутся.',
+            'Не сработало автоматически — можно попросить явно.',
+            'Публикация: для себя, внутри организации или публичной ссылкой; чат при этом остаётся приватным.',
+            'Office-файлы и PDF артефактами не являются.',
+          ],
+          example: '',
+          mistake: 'Ждать артефакт на ответ в три строки. Для короткого результата он не создаётся.',
+          remember: 'Артефакт — то, что переживёт беседу.',
+        },
+      },
+      {
+        en: 'Skills vs Projects', ru: 'Скиллы против проектов',
+        note: 'Projects store knowledge, skills perform tasks.',
+        detail: {
+          what: 'Главная развилка курса: знание против процедуры.',
+          how: [
+            'Проект: долгий контекст, справочные материалы, работа команды.',
+            'Скилл: повторяемый процесс, многошаговая задача, единая методика.',
+            'Знание доступно во всех беседах проекта; инструкции скилла применяются при вызове.',
+            'Та же ось различает скилл и CLAUDE.md в Claude Code.',
+          ],
+          example: '',
+          mistake: 'Класть процедуру в знания проекта. Она будет висеть в контексте всегда и всё равно не выполнится сама.',
+          remember: 'Знание — «что», процедура — «как».',
+        },
+      },
+      {
+        en: 'Connectors', ru: 'Коннекторы',
+        note: 'Веб-сервисы и локальные расширения; доступ ровно твой.',
+        detail: {
+          what: 'Подключение Claude к инструментам, с которыми ты работаешь сам.',
+          how: [
+            'Два типа: облачные сервисы и десктоп-расширения для локальных файлов.',
+            'Доступ выдаётся узко под нужды коннектора и отзывается в любой момент.',
+            'Claude видит только то, к чему есть доступ у тебя.',
+            'Под капотом это MCP — один стандарт вместо интеграции под каждое приложение.',
+          ],
+          example: '',
+          mistake: 'Выдавать доступ ко всему сервису, когда нужна одна папка.',
+          remember: 'Коннектор не расширяет твои права, а переносит их.',
+        },
+      },
+      {
+        en: 'Research', ru: 'Режим исследования',
+        note: 'Планирует, ищет итеративно, синтезирует, цитирует.',
+        detail: {
+          what: 'Превращение ассистента в систематического исследователя.',
+          how: [
+            'Разбивает запрос и решает, какая информация нужна.',
+            'Ведёт много поисков, опирающихся друг на друга, и сам выбирает следующий шаг.',
+            'Сводит найденное в отчёт и ссылается на источники.',
+            'Паттерн выбора: синтез из многих источников — research; один факт — быстрый поиск; чистое рассуждение — thinking; внутренние документы — enterprise search.',
+          ],
+          example: '',
+          mistake: 'Запускать research на вопрос с одним авторитетным источником. Это дольше и дороже обычного поиска.',
+          remember: 'Research — когда ответ надо собрать из многих источников.',
+        },
+      },
+      {
+        en: 'Enterprise search', ru: 'Поиск по компании',
+        note: 'Предзаготовленный проект на всю организацию; всегда цитирует.',
+        detail: {
+          what: 'Поиск и синтез по внутренним инструментам компании.',
+          how: [
+            'Настраивается владельцем организации: подключаются документы и переписка.',
+            'Каждый пользователь аутентифицируется в сервисах под своей учёткой.',
+            'Показывает только то, к чему у тебя и так есть доступ; отдельно данные не индексируются.',
+            'Ответ всегда со ссылками на источники.',
+          ],
+          example: '',
+          mistake: 'Ожидать, что он найдёт документ, к которому у тебя нет прав в исходном сервисе.',
+          remember: 'Видишь ровно то, что видел бы сам.',
+        },
+      },
+    ],
+    check: [
+      { q: 'Which three elements make up an effective prompt?', a: 'Setting the stage, defining the task, and specifying rules.' },
+      { q: 'If a Claude response is too generic, what should you try?', a: 'Add more details about your audience, role, or constraints.' },
+      { q: 'What happens when a project knowledge base approaches context limits?', a: 'Claude searches the project knowledge and retrieves only what is relevant, expanding capacity by up to 10x.' },
+      { q: 'What is the primary difference between projects and skills?', a: 'Projects store knowledge; skills perform tasks.' },
+      { q: 'What can you do with a published artifact?', a: 'Share it via a link — anyone can view and interact with it, even without a Claude account.' },
+      { q: 'What data can Claude access through connectors?', a: 'Only data you already have permission to access.' },
+      { q: 'Who completes the initial setup before a team can use Enterprise Search?', a: 'An organization owner or admin.' },
+      { q: 'Which task is a good candidate for Research?', a: 'Comprehensive analysis that needs synthesis across many sources with citations.' },
+      { q: 'Which Claude product suits navigating an unfamiliar codebase?', a: 'Claude Code.' },
+      { q: 'What are the four steps Research takes?', a: 'Plan the approach, run many interdependent searches, synthesize the findings, cite every claim.' },
+    ],
+    qa: [
+      { q: 'Что из этого курса реально спрашивают на экзамене?', a: 'Plan mode, ось «скилл против CLAUDE.md», принцип «искать, а не грузить всё», цитирование как provenance и least privilege. Артефакты, Cowork и Enterprise Search в блюпринте отсутствуют.' },
+    ],
+  },
+
+  'course-cc-101': {
+    title: 'Claude Code 101',
+    intro: 'Что это, из чего состоит и как устроен ежедневный цикл работы.',
     source: 'Partner Academy — Claude Code 101',
-    outline: ['Что такое Claude Code', 'Как он работает: контекст, инструменты, права', 'Ежедневные сценарии', 'Настройка под себя'],
-  }),
-  'course-cc-action': stub('Claude Code in Action', 'Длинные сессии, конфигурация, автоматизация, плагины.', {
-    source: 'Partner Academy — Claude Code in Action',
-    outline: [
-      'Управление длинной сессией',
-      'CLAUDE.md, verification skills, permission modes, hooks',
-      'Routines, headless -p, --bare для CI, Agent SDK',
-      'GitHub Actions и code review',
-      'Плагины: что внутри, как ставить, чем рискованно',
+    points: [
+      {
+        t: 'Это агентный инструмент, а не автодополнение',
+        d: 'Читает кодовую базу, правит файлы, запускает команды и подключается к внешним инструментам. Живёт в терминале, в VS Code, в JetBrains и в десктопном Claude.',
+      },
+      {
+        t: 'Контекст решает, что Claude вообще видит',
+        d: 'Окно контекста хранит разговор, содержимое файлов и вывод команд. Всё, чего там нет, для агента не существует.',
+      },
+      {
+        t: 'Инструменты — то, чем агент отличается от чата',
+        d: 'Обычный ассистент принимает текст и возвращает текст. Инструменты позволяют читать, писать и выполнять.',
+      },
+      {
+        t: 'Три режима прав',
+        d: 'Поведение по умолчанию, авто-приём правок и режим плана (Shift+Tab). Выбирается под риск задачи.',
+      },
+      {
+        t: 'Ежедневный цикл: Explore → Plan → Code → Commit',
+        d: 'Сначала дать контекст, потом получить план, потом работать итерациями, потом посмотреть диф и закоммитить. Пропуск первых двух шагов — главная причина «сделал не то».',
+      },
+      {
+        t: 'MCP-серверы занимают контекст всегда',
+        d: 'Определения их инструментов попадают в окно, даже когда ты ими не пользуешься. Много подключённых серверов — меньше доступного контекста.',
+      },
+      {
+        t: 'Хуки отличаются от всего остального детерминированностью',
+        d: 'CLAUDE.md, скиллы и субагенты влияют на решения модели. Хук просто выполняется в нужный момент жизненного цикла — всегда.',
+      },
     ],
-  }),
-  'course-skills': stub('Introduction to Agent Skills', 'Создание, конфигурация, раздача и отладка скиллов.', {
+    terms: [
+      {
+        en: 'Context window', ru: 'Окно контекста',
+        note: 'Разговор, содержимое файлов и вывод команд — всё, что агент может учесть.',
+        detail: {
+          what: 'Объём, в который помещается всё, на что агент опирается.',
+          how: [
+            'Туда попадают сообщения, прочитанные файлы, вывод команд и определения инструментов.',
+            'Чего там нет — того для агента не существует, даже если файл лежит рядом.',
+            'Подключённые MCP-серверы отъедают часть окна постоянно.',
+          ],
+          example: '',
+          mistake: 'Держать подключёнными все серверы разом «на всякий случай». Контекст сужается ещё до начала работы.',
+          remember: 'Контекст — ограниченный ресурс, который тратится и на инструменты.',
+        },
+      },
+      {
+        en: 'Permissions', ru: 'Режимы прав',
+        note: 'По умолчанию · авто-приём правок · режим плана (Shift+Tab).',
+        detail: {
+          what: 'Насколько агент действует без вопросов.',
+          how: [
+            'По умолчанию спрашивает перед изменениями.',
+            'Авто-приём правок ускоряет работу там, где откат дешёв.',
+            'Режим плана — разобраться и предложить план, ничего не меняя.',
+          ],
+          example: '',
+          mistake: 'Включать авто-приём в незнакомом репозитории. Откатывать придётся вручную и без понимания, что именно поменялось.',
+          remember: 'Незнакомая задача — режим плана.',
+        },
+      },
+      {
+        en: 'Explore → Plan → Code → Commit', ru: 'Ежедневный цикл',
+        note: 'Дать контекст, получить план, работать итерациями, проверить диф.',
+        detail: {
+          what: 'Последовательность, вокруг которой строится работа в Claude Code.',
+          how: [
+            'Explore — дать агенту нужный контекст проекта.',
+            'Plan — получить план, по которому потом измеряется успех.',
+            'Code — итерации между тобой и агентом до результата.',
+            'Commit — ревью дифа и отправка, чтобы перейти к следующей задаче.',
+          ],
+          example: '',
+          mistake: 'Начинать с Code. Агент напишет аккуратную реализацию того, что сам понял из одной фразы.',
+          remember: 'Контекст и план — первые два шага, а не формальность.',
+        },
+      },
+      {
+        en: 'Subagents', ru: 'Субагенты',
+        note: 'Каждый работает в своём изолированном окне контекста.',
+        detail: {
+          what: 'Способ раздать части задачи и сэкономить основной контекст.',
+          how: [
+            'Claude делегирует подзадачи и может выполнять их параллельно.',
+            'У каждого субагента своё окно: он читает много, возвращает выжимку.',
+            'Архитектурная сторона — в разделе Multi-Agent Systems.',
+          ],
+          example: '',
+          mistake: 'Ждать, что субагент видит твой разговор. Контекст у него свой, и всё нужное ему нужно передать.',
+          remember: 'Субагент экономит контекст, а не время на объяснения.',
+        },
+      },
+      {
+        en: 'Hooks', ru: 'Хуки',
+        note: 'Команды в точках жизненного цикла. Главное отличие — детерминированность.',
+        detail: {
+          what: 'Автоматика, которая не зависит от решения модели.',
+          how: [
+            'Выполняются в заданные моменты: до или после вызова инструмента.',
+            'CLAUDE.md, скиллы и субагенты влияют на решения модели; хук просто срабатывает.',
+            'Поэтому всё, что должно происходить всегда, делают хуком.',
+          ],
+          example: '',
+          mistake: 'Надеяться, что просьба в CLAUDE.md сработает в ста процентах случаев.',
+          remember: 'Надо «всегда» — это хук.',
+        },
+      },
+    ],
+    check: [
+      { q: 'What is Claude Code in one sentence?', a: 'An agentic coding tool that reads your codebase, edits files, runs commands and connects to external tools.' },
+      { q: 'Where can you run it?', a: 'Terminal, VS Code, JetBrains and the Claude Desktop app.' },
+      { q: 'What does the context window determine?', a: 'How much of the conversation, file contents and command output Claude can store and reference.' },
+      { q: 'Name the three permission behaviors.', a: 'Default behavior, auto-accept, and plan mode (Shift+Tab).' },
+      { q: 'What are the four steps of the daily workflow?', a: 'Explore, Plan, Code, Commit.' },
+      { q: 'What does CLAUDE.md give Claude Code?', a: 'Persistent memory about your project.' },
+      { q: 'Why does each subagent have its own context window?', a: 'So it can break a task down and run parts in parallel without consuming the main context.' },
+      { q: 'What is the cost of having many MCP servers configured?', a: 'Their tool definitions sit in the context window even when unused, leaving less context available.' },
+      { q: 'What makes hooks different from skills, subagents and CLAUDE.md?', a: 'Hooks are deterministic — they always run at their point in the lifecycle.' },
+    ],
+  },
+
+  'course-cc-action': {
+    title: 'Claude Code in Action',
+    intro: 'Длинные сессии, режимы прав, хуки, автоматизация и плагины.',
+    source: 'Partner Academy — Claude Code in Action',
+    domain: 'D1',
+    points: [
+      {
+        t: 'Сначала очертить объём, потом править курс',
+        d: 'Режим плана задаёт рамку, compact оставляет в сводке нужное, rewind возвращает назад, когда Claude уехал не туда.',
+      },
+      {
+        t: 'Goal задаёт условие завершения, а не шаги',
+        d: 'Описываешь, как выглядит «готово», и работа идёт несколько ходов, пока быстрый проверяющий не подтвердит выполнение. Берут тогда, когда «готово» описать проще, чем шаги.',
+      },
+      {
+        t: 'Шесть режимов прав, а не три',
+        d: 'Manual · accept edits · plan · auto с отдельным классификатором на каждое действие · don’t ask с белым списком · bypass только внутри контейнера.',
+      },
+      {
+        t: 'Остановить действие может только PreToolUse',
+        d: 'Это единственный хук, срабатывающий до выполнения. PostToolUse вешают на форматирование, Stop — чтобы не дать закончить ход раньше времени.',
+      },
+      {
+        t: 'Автоматизация: бери самый левый вариант, который решает задачу',
+        d: 'Routines → headless -p → --bare для CI → Agent SDK. Первый не требует вообще ничего хостить, последний живёт внутри твоего продукта.',
+      },
+      {
+        t: 'Routines работают в облаке с чистого клона',
+        d: 'Триггер поднимает сессию у Anthropic, она клонирует дефолтную ветку и пушит только в claude/*. Компьютер может быть выключен; зелёный статус значит «сессия не упала», а не «задача сделана».',
+      },
+      {
+        t: 'Code Review находит, но не чинит',
+        d: 'Готовый сервис комментирует строки в PR с учётом всей кодовой базы, но не аппрувит, не блокирует и не правит. Чинят локально командой ревью с флагом применения находок.',
+      },
+      {
+        t: 'Плагин выполняет код с твоими правами',
+        d: 'Он не перезаписывает твою конфигурацию — хуки складываются с твоими. Поставил ради скиллов — получил и его PreToolUse, читал ты их или нет.',
+      },
+    ],
+    terms: [
+      {
+        en: 'Permission modes', ru: 'Шесть режимов прав',
+        note: 'manual · accept edits · plan · auto · don’t ask · bypass.',
+        detail: {
+          what: 'Градация самостоятельности от «спрашивать всё» до «не спрашивать ничего».',
+          how: [
+            'Manual: без запроса только чтение, всё остальное спрашивает.',
+            'Accept edits: правки файлов и обычные файловые команды без вопросов.',
+            'Plan: только чтение — исследует и предлагает, ничего не меняя.',
+            'Auto: принимает всё, но каждое действие проверяет отдельная модель-классификатор.',
+            'Don’t ask: разрешены только заранее одобренные инструменты, остальное запрещается молча.',
+            'Bypass: без проверок вообще — только внутри контейнера или виртуальной машины.',
+          ],
+          example: '',
+          mistake: 'Путать auto и bypass. В auto каждое действие проверяется классификатором, в bypass не проверяется ничего.',
+          remember: 'Режим выбирают по тому, что будет при ошибке.',
+        },
+      },
+      {
+        en: 'Hook events', ru: 'События хуков',
+        note: 'PreToolUse · PostToolUse · Stop · PreCompact · InstructionsLoaded · SessionStart.',
+        detail: {
+          what: 'Точки жизненного цикла, к которым можно привязать команду.',
+          how: [
+            'PreToolUse — до вызова: единственный, который может остановить действие.',
+            'PostToolUse — после успешного вызова: автоформатирование, линт.',
+            'Stop — когда Claude хочет закончить ход; можно отказать, если условие не выполнено. Для субагентов есть парный SubagentStop.',
+            'PreCompact и PostCompact — вокруг компактизации контекста.',
+            'InstructionsLoaded — когда загрузился CLAUDE.md: удобно для аудита контекста.',
+            'SessionStart — подготовка окружения на старте.',
+          ],
+          example: '',
+          mistake: 'Вешать запрет на PostToolUse. К этому моменту действие уже выполнено.',
+          remember: 'Запрещать можно только до выполнения — это PreToolUse.',
+        },
+      },
+      {
+        en: 'Routines', ru: 'Промпт по расписанию',
+        note: 'Облако Anthropic: cron, HTTP-запрос или событие GitHub.',
+        detail: {
+          what: 'Автоматизация без собственной инфраструктуры.',
+          how: [
+            'Связывает промпт, репозиторий, коннекторы и триггер.',
+            'Запуск поднимает сессию в облаке, клонирует дефолтную ветку, пушит в claude/*.',
+            'Расписание не чаще раза в час; это research preview, поведение будет меняться.',
+            'Действия через коннекторы выполняются от твоего имени.',
+            'Local scheduled task в десктопе — другое: работает на твоей машине и видит локальные файлы.',
+          ],
+          example: '/schedule daily dependency audit at 9am',
+          mistake: 'Считать зелёный статус запуска подтверждением результата. Он означает только, что сессия не упала.',
+          remember: 'Повторяется — не запускай руками.',
+        },
+      },
+      {
+        en: 'Headless (-p)', ru: 'Неинтерактивный запуск',
+        note: 'Пропускает хуки, скиллы, плагины, MCP и CLAUDE.md — старт быстрее.',
+        detail: {
+          what: 'Одноразовый прогон как обычная утилита в конвейере.',
+          how: [
+            'Читает stdin, пишет stdout — встраивается в скрипт без доработок.',
+            'Автоподгрузка твоей конфигурации отключена: только модель и явно разрешённые инструменты.',
+            'Нужны данные — попроси JSON по схеме и читай поле структурированного вывода.',
+            'Многошаговая работа: забрать идентификатор сессии из ответа и продолжить её позже.',
+          ],
+          impl: {
+            file: 'план и исполнение двумя скриптами',
+            body: `# 1. построить план и сохранить
+claude -p "составь план миграции" \\
+  --output-format json > /tmp/plan.json
+
+# 2. продолжить ту же сессию позже
+claude --resume \\
+  "$(jq -r .session_id /tmp/plan.json)" \\
+  "выполни шаг 1 из плана"`,
+            notes: [
+              'Идентификатор сессии связывает два запуска: контекст плана не теряется.',
+              'json плюс jq надёжнее разбора человекочитаемого текста.',
+              'В -p конфигурация не подгружается — нужные инструменты перечисляют явно.',
+              'Для CI, где важна повторяемость, используют детерминированный режим --bare.',
+            ],
+          },
+          mistake: 'Ожидать, что в headless сработают твои хуки и CLAUDE.md. Они не подгружаются.',
+          remember: '-p — быстрый и голый: всё нужное передаёшь явно.',
+        },
+      },
+      {
+        en: 'Code Review vs Action', ru: 'Ревью или экшен',
+        note: 'Готовый сервис комментирует; экшен делает.',
+        detail: {
+          what: 'Два способа отдать работу в pull request.',
+          how: [
+            'Code Review: включается админом, смотрит диф в контексте кодовой базы, оставляет инлайн-комментарии с severity.',
+            'Не аппрувит, не блокирует и не правит — решение и починка за человеком.',
+            'GitHub Action: ставится командой установки приложения, запускается по фразе-триггеру или по расписанию и может вносить изменения.',
+            'В аргументах экшена задают потолок ходов, режим прав и список инструментов.',
+          ],
+          example: '',
+          mistake: 'Брать экшен там, где достаточно ревью. Начинают с готового сервиса и переходят, когда нужно действие, а не комментарий.',
+          remember: 'Комментарий — сервис, действие — экшен.',
+        },
+      },
+      {
+        en: 'Plugins', ru: 'Плагины',
+        note: 'Один пакет: скиллы, субагенты, хуки, конфиги MCP. Выполняется с твоими правами.',
+        detail: {
+          what: 'Способ раздать свою конфигурацию одной установкой.',
+          how: [
+            'Использует ту же структуру .claude: папка на скилл, файл на субагента, хуки и конфиги MCP в корне.',
+            'Для команды добавляют свой marketplace — общий источник с версиями и обновлениями.',
+            'Ничего не перезаписывает: хуки плагина складываются с твоими и срабатывают на тех же вызовах.',
+            'Ключ agent в его настройках может поднять субагента плагина в главный поток и изменить поведение по умолчанию.',
+          ],
+          example: '/plugin marketplace add your-org/claude-plugins\n/plugin install org-name@plugin-name\n/reload-plugins',
+          mistake: 'Считать «прошёл ревью маркетплейса» гарантией безопасности. Автоматика ловит не всё, а хуки плагина выполняются у тебя.',
+          remember: 'Ставить только из источников, которым доверяешь, и смотреть, что внутри.',
+        },
+      },
+    ],
+    check: [
+      { q: 'What does setting a Goal do differently from giving steps?', a: 'It defines the finish condition; Claude works over several turns until a fast evaluator confirms the condition is met.' },
+      { q: 'Name the six permission modes.', a: 'Manual, accept edits, plan, auto, don’t ask, and bypass permissions.' },
+      { q: 'Which permission mode checks every action with a separate classifier model?', a: 'Auto.' },
+      { q: 'Which hook event can stop an action before it happens?', a: 'PreToolUse — it is the only one that runs before the tool call.' },
+      { q: 'Where do routines run and what branch do they push to?', a: 'In Anthropic cloud, from a fresh clone of the default branch, pushing only to claude/* branches.' },
+      { q: 'What does a green routine run status actually mean?', a: 'Only that the session did not crash — not that the task was completed.' },
+      { q: 'What does -p skip compared with an interactive session?', a: 'Auto-loading of hooks, skills, plugins, MCP servers and CLAUDE.md.' },
+      { q: 'How do you continue a headless run later?', a: 'Take the session id from the JSON output and resume that session.' },
+      { q: 'Can the Code Review service approve, block or fix a PR?', a: 'No — it only comments inline; approval and fixes stay with the human.' },
+      { q: 'What is the main risk of installing a third-party plugin?', a: 'It executes code with your permissions — its hooks run on every matching tool call whether you read them or not.' },
+      { q: 'When should you move from Code Review to a GitHub Action?', a: 'When you need Claude to do something in CI, not just comment.' },
+    ],
+  },
+
+  'course-skills': {
+    title: 'Introduction to Agent Skills',
+    intro: 'Как записать повторяющееся один раз: создание, конфигурация, раздача, отладка.',
     source: 'Partner Academy — Introduction to Agent Skills',
     domain: 'D1',
-    outline: [
-      'Что такое скилл и где он лежит',
-      'Как Claude решает, что скилл нужен',
-      'Frontmatter, description, allowed-tools',
-      'Многофайловые скиллы и progressive disclosure',
-      'Раздача, субагенты, чеклист проблем',
+    points: [
+      {
+        t: 'Объясняешь одно и то же дважды — напрашивается скилл',
+        d: 'Чеклист ревью, формат коммитов, стандарты команды. Записал однажды — дальше применяется само, когда задача всплывает.',
+      },
+      {
+        t: 'Скилл выбирается по описанию, а не по команде',
+        d: 'Claude сравнивает запрос со смыслом описаний всех доступных скиллов. Никакой явной команды нет, поэтому описание — механизм выбора, а не украшение.',
+      },
+      {
+        t: 'Четыре места и два уровня',
+        d: 'Личные лежат в ~/.claude/skills и работают во всех проектах. Проектные — в .claude/skills репозитория и едут к каждому, кто его клонировал.',
+      },
+      {
+        t: 'Приоритет при совпадении имён',
+        d: 'Enterprise → Personal → Project → Plugins. Корпоративный скилл всегда бьёт личный с тем же именем; поэтому имена делают конкретными: не review, а frontend-review.',
+      },
+      {
+        t: 'SKILL.md держат меньше пятисот строк',
+        d: 'При активации файл целиком уезжает в контекст. Подробности выносят в references, скрипты — в scripts, и в SKILL.md пишут, когда их читать.',
+      },
+      {
+        t: 'Скрипт выполняется, не попадая в контекст',
+        d: 'Токены тратит только его вывод. Поэтому в инструкции пишут «запусти скрипт», а не «прочитай скрипт»: протестированный код надёжнее сгенерированного.',
+      },
+      {
+        t: 'После правок нужен перезапуск',
+        d: 'Изменил SKILL.md или удалил каталог — перезапусти Claude Code, иначе изменения не подхватятся.',
+      },
+      {
+        t: 'Субагенты не видят скиллы сами',
+        d: 'Они стартуют с чистого контекста: встроенные агенты скиллов не имеют вовсе, кастомным их перечисляют явно полем skills, и грузятся они на старте, а не по требованию.',
+      },
     ],
-  }),
-  'course-mcp': stub('Introduction to MCP', 'Серверы, клиенты, инспектор, практический проект.', {
+    terms: [
+      {
+        en: 'description', ru: 'Описание скилла',
+        note: 'Отвечает на два вопроса: что делает и когда применять. До 1024 символов.',
+        detail: {
+          what: 'Единственный механизм, по которому скилл находят.',
+          how: [
+            'Подбор семантический: запрос сравнивается со смыслом описания.',
+            'Описание должно отвечать и «что делает», и «когда применять».',
+            '«Твоя работа — помогать с документацией» не говорит ничего ни человеку, ни модели.',
+            'Проверяют на разных формулировках задачи и дописывают слова, на которых не сработало.',
+          ],
+          example: 'description: Writes pull request descriptions.\n  Use when creating a PR, writing a PR, or when\n  the user asks to summarize changes for a PR.',
+          mistake: 'Описывать достоинства скилла вместо поводов его применить. Поводов нет — срабатывания тоже.',
+          remember: 'Скилл не сработал — почти всегда виновато описание.',
+        },
+      },
+      {
+        en: 'Frontmatter', ru: 'Заголовок скилла',
+        note: 'name и description обязательны, allowed-tools и model — по желанию.',
+        detail: {
+          what: 'Шапка SKILL.md, по которой скилл находят и ограничивают.',
+          how: [
+            'name: строчные буквы, цифры и дефисы, до 64 символов, совпадает с именем каталога.',
+            'description: до 1024 символов, отвечает на «что» и «когда».',
+            'allowed-tools: пока скилл активен, доступны только перечисленные инструменты.',
+            'model: какая модель работает по этому скиллу.',
+          ],
+          impl: {
+            file: '~/.claude/skills/codebase-onboarding/SKILL.md',
+            body: `---
+name: codebase-onboarding
+description: Helps new developers understand how
+  the system works. Use when someone asks where
+  something lives or how a feature is wired.
+allowed-tools: Read, Grep, Glob, Bash
+model: sonnet
+---
+
+1. Прочитать README и CLAUDE.md
+2. Найти точку входа и описать путь запроса
+3. Ответить списком: файл → его роль`,
+            notes: [
+              'Имя каталога и поле name совпадают — иначе скилл не загрузится.',
+              'allowed-tools здесь делает скилл read-only: ни записи, ни правок.',
+              'Поле model позволяет отдать задачу модели подешевле, не меняя сессию.',
+              'Тело короткое: подробности выносят в references/ и читают по необходимости.',
+            ],
+          },
+          mistake: 'Класть SKILL.md прямо в skills/, а не в именованный каталог. Такой скилл не загружается вовсе.',
+          remember: 'Каталог, SKILL.md заглавными, name совпадает с каталогом.',
+        },
+      },
+      {
+        en: 'Progressive disclosure', ru: 'Постепенная загрузка',
+        note: 'В SKILL.md — суть, подробности в references и scripts.',
+        detail: {
+          what: 'Способ держать большой скилл, не отдавая ему контекст целиком.',
+          how: [
+            'Изначально в контексте только имя и описание.',
+            'При активации SKILL.md уезжает в контекст целиком — отсюда правило «меньше пятисот строк».',
+            'Стандартная структура каталога: scripts/, references/, assets/.',
+            'В SKILL.md пишут, когда читать каждый файл: это оглавление вместо всего документа.',
+          ],
+          example: '',
+          mistake: 'Складывать всё в один файл на две тысячи строк: и контекст съеден, и поддерживать мучительно.',
+          remember: 'SKILL.md — оглавление, а не справочник.',
+        },
+      },
+      {
+        en: 'Skill vs CLAUDE.md vs Hook', ru: 'Три разных триггера',
+        note: 'По требованию · всегда · на событие.',
+        detail: {
+          what: 'Три механизма, которые легко перепутать.',
+          how: [
+            'CLAUDE.md грузится всегда, в каждый разговор: стандарты и ограничения проекта.',
+            'Скилл — по требованию, когда описание совпало с запросом.',
+            'Хук — на событие: сохранение файла, вызов инструмента. Срабатывает независимо от запроса.',
+            'Субагент — делегирование в отдельный изолированный контекст.',
+          ],
+          example: '',
+          mistake: 'Писать процедуру в CLAUDE.md «чтобы точно сработало». Она будет висеть в контексте всегда и мешать остальным задачам.',
+          remember: 'Скилл request-driven, хук event-driven, CLAUDE.md всегда.',
+        },
+      },
+      {
+        en: 'Skill sharing', ru: 'Раздача скиллов',
+        note: 'Коммит в репозиторий · плагин · managed settings организации.',
+        detail: {
+          what: 'Три способа сделать скилл доступным другим.',
+          how: [
+            'Коммит в .claude/skills: клонировал репозиторий — получил скиллы, запушил — получили все.',
+            'Плагин: каталог skills/ внутри плагина и раздача через marketplace. Для того, что полезно шире одной команды.',
+            'Enterprise managed settings: админ раскатывает на организацию с высшим приоритетом — обязательные стандарты и compliance.',
+            'strictKnownMarketplaces ограничивает, откуда вообще можно ставить плагины.',
+          ],
+          example: '',
+          mistake: 'Раздавать через плагин то, что намертво завязано на структуру одного репозитория.',
+          remember: 'Завязан на проект — в репозиторий, полезен шире — в плагин.',
+        },
+      },
+      {
+        en: 'Troubleshooting', ru: 'Отладка скиллов',
+        note: 'Не сработал — описание. Не загрузился — структура и имя файла.',
+        detail: {
+          what: 'Чеклист для самых частых проблем.',
+          how: [
+            'Не срабатывает: подбор семантический — проверь на разных формулировках и дополни описание.',
+            'Не загружается: SKILL.md внутри именованного каталога, имя ровно SKILL.md; ошибки видны с claude --debug.',
+            'Сработал не тот: описания слишком похожи, развести их.',
+            'Личный игнорируется: имя совпало со старшим по приоритету — переименовать свой.',
+            'Падает при выполнении: зависимости не установлены, скрипту нужен chmod +x, пути — через прямые слэши.',
+          ],
+          example: '',
+          mistake: 'Гадать о причине, не запустив валидатор и claude --debug. Структурные проблемы ловятся за секунды.',
+          remember: 'Сначала валидатор и --debug, потом гипотезы.',
+        },
+      },
+    ],
+    check: [
+      { q: 'How does Claude decide that a skill is needed?', a: 'It semantically compares the request with the description of every available skill and activates the ones that match.' },
+      { q: 'Where do personal and project skills live?', a: 'Personal in ~/.claude/skills, project ones in .claude/skills inside the repository.' },
+      { q: 'What is the precedence order when names collide?', a: 'Enterprise, then personal, then project, then plugins.' },
+      { q: 'Which frontmatter fields are required?', a: 'name and description; allowed-tools and model are optional.' },
+      { q: 'What does allowed-tools do?', a: 'While the skill is active, Claude may use only the listed tools — no edits or writes unless named.' },
+      { q: 'Why keep SKILL.md under about 500 lines?', a: 'On activation the whole file enters the context window; details belong in reference files loaded on demand.' },
+      { q: 'What is the difference between a skill and a hook?', a: 'A skill is request-driven — it reacts to what you ask. A hook is event-driven — it runs on an event regardless of the request.' },
+      { q: 'What is the difference between a skill and a subagent?', a: 'A skill adds knowledge to the current conversation; a subagent takes the work into a separate isolated context and returns a result.' },
+      { q: 'Do subagents get skills automatically?', a: 'No. Built-in agents have no access at all; custom subagents need skills listed explicitly, and they load at start rather than on demand.' },
+      { q: 'A skill does not trigger. What is the first thing to check?', a: 'The description — whether it names the situations and wording that should activate it.' },
+      { q: 'What must you do after editing or deleting a skill?', a: 'Restart Claude Code, otherwise the change is not picked up.' },
+    ],
+  },
+
+  'course-mcp': {
+    title: 'Introduction to MCP',
+    intro: 'Протокол, сервер, клиент и три примитива — плюс практический проект на stdio.',
     source: 'Partner Academy — Introduction to MCP',
     domain: 'D3',
-    outline: [
-      'Какую проблему решает и из чего состоит',
-      'Свой сервер: tools, resources, prompts',
-      'Инспектор',
-      'Свой клиент: полный ход запроса',
-      'Практический проект: CLI-чат по stdio',
+    points: [
+      {
+        t: 'MCP снимает с тебя написание интеграций',
+        d: 'У GitHub сотни операций. Без протокола схемы и функции под каждую пишешь и поддерживаешь сам; с ним эту работу уже сделал MCP-сервер сервиса.',
+      },
+      {
+        t: 'Инструмент состоит из двух половин',
+        d: 'Схема — имя, описание и JSON Schema аргументов: по ней модель решает, что вызвать. Функция — код, который реально ходит в API. Модель схему читает, но не выполняет.',
+      },
+      {
+        t: 'MCP и tool use — не одно и то же',
+        d: 'Tool use — про то, как Claude вызывает инструменты. MCP — про то, кто написал их схемы и реализацию. Они дополняют друг друга.',
+      },
+      {
+        t: 'Между Claude и сервером нет прямой связи',
+        d: 'Claude только называет инструмент. Выполняет твой код через MCP-клиента, а агентный цикл живёт в твоём приложении — там же проверка stop_reason и отправка tool_result.',
+      },
+      {
+        t: 'Протокол не привязан к транспорту',
+        d: 'Чаще всего клиент и сервер на одной машине и общаются через stdin и stdout. Можно и по сети — сообщения и схемы от этого не меняются.',
+      },
+      {
+        t: 'Схему руками не пишут',
+        d: 'SDK генерирует её из декоратора, аннотаций типов и описаний полей. Но описания — не комментарии: по ним модель выбирает инструмент и заполняет аргументы.',
+      },
+      {
+        t: 'Инспектор проверяет сервер без приложения',
+        d: 'Браузерный инспектор из SDK показывает список инструментов и позволяет вызвать любой руками. Состояние между вызовами сохраняется, так что цепочки проверяются целиком.',
+      },
+      {
+        t: 'Три примитива различаются тем, кто ими управляет',
+        d: 'Tools служат модели, resources — приложению, prompts — пользователю. Это и есть критерий выбора при проектировании сервера.',
+      },
     ],
-  }),
-  'course-api': stub('Claude with the Anthropic API', 'Запросы, evals, промптинг, tool use, RAG.', {
+    terms: [
+      {
+        en: 'Tools', ru: 'Инструменты сервера',
+        note: 'Управляет модель: сама решает, когда вызвать.',
+        detail: {
+          what: 'Новые возможности, которыми Claude пользуется автономно.',
+          how: [
+            'Объявляются декоратором: имя, описание и функция с описанными параметрами.',
+            'Описание инструмента и каждого поля — механизм выбора, а не документация.',
+            'Исполнение всегда на стороне сервера; модель только просит вызов.',
+          ],
+          impl: {
+            file: 'mcp_server.py — инструмент',
+            body: `from mcp.server.fastmcp import FastMCP
+from pydantic import Field
+
+mcp = FastMCP("DocumentMCP", log_level="ERROR")
+
+@mcp.tool(
+    name="edit_document",
+    description="Edit a document by replacing a
+      string in its content with a new string."
+)
+def edit_document(
+    doc_id: str = Field(
+        description="Id of the document to edit"),
+    old_str: str = Field(
+        description="Text to replace. Must match
+          exactly, including whitespace."),
+    new_str: str = Field(
+        description="New text to insert."),
+):
+    if doc_id not in docs:
+        raise ValueError("Doc not found")
+    docs[doc_id] = docs[doc_id].replace(
+        old_str, new_str)`,
+            notes: [
+              'JSON Schema генерируется из аннотаций и Field — руками её не пишут.',
+              'Оговорка «must match exactly, including whitespace» стоит в описании поля именно потому, что её читает модель.',
+              'Ошибку поднимают исключением: клиент получит её как неуспешный результат вызова.',
+              'Имя в декораторе — то, что увидит модель, а не имя функции.',
+            ],
+          },
+          mistake: 'Писать в описаниях полей комментарии для коллег. Их читает модель, и от них зависят аргументы вызова.',
+          remember: 'Tools служат модели.',
+        },
+      },
+      {
+        en: 'Resources', ru: 'Ресурсы',
+        note: 'Управляет приложение: данные по URI, GET-хендлеры сервера.',
+        detail: {
+          what: 'Способ затянуть данные в приложение или прямо в промпт, не вызывая инструмент.',
+          how: [
+            'Клиент шлёт запрос с URI, сервер вызывает нужную функцию и возвращает содержимое.',
+            'Direct — статический URI без параметров; templated — параметры прямо в адресе.',
+            'mime_type подсказывает клиенту тип данных; сериализацию SDK делает сам.',
+            'Каталог ресурсов даёт агенту обзор доступного без разведочных вызовов инструментов.',
+          ],
+          impl: {
+            file: 'mcp_server.py — два вида ресурсов',
+            body: `# Direct — статический URI
+@mcp.resource("docs://documents",
+              mime_type="application/json")
+def list_docs() -> list[str]:
+    return list(docs.keys())
+
+# Templated — параметр прямо в URI
+@mcp.resource("docs://documents/{doc_id}",
+              mime_type="text/plain")
+def fetch_doc(doc_id: str) -> str:
+    if doc_id not in docs:
+        raise ValueError("Doc not found")
+    return docs[doc_id]`,
+            notes: [
+              'Первый отдаёт список для автодополнения, второй — содержимое конкретного документа.',
+              'SDK сам разбирает параметр из URI в аргумент функции.',
+              'Содержимое подставляется в промпт, поэтому вызов инструмента не нужен.',
+              'В инспекторе они видны двумя секциями: Resources и Resource Templates.',
+            ],
+          },
+          mistake: 'Делать ресурсом то, что меняет состояние. Ресурс — это GET, действие — инструмент.',
+          remember: 'Resources служат приложению.',
+        },
+      },
+      {
+        en: 'Prompts', ru: 'Готовые сценарии',
+        note: 'Управляет пользователь: запускает действием в интерфейсе.',
+        detail: {
+          what: 'Выверенные инструкции, которые автор сервера написал один раз за всех.',
+          how: [
+            'Объявляются декоратором и возвращают список сообщений, уходящих модели.',
+            'Пользователь запускает их кнопкой или командой — модель сама их не выбирает.',
+            'Смысл в том, что автор сервера протестировал формулировку и учёл граничные случаи.',
+          ],
+          example: '',
+          mistake: 'Считать это дубликатом инструмента. Инструмент выбирает модель, сценарий запускает человек.',
+          remember: 'Prompts служат пользователю.',
+        },
+      },
+      {
+        en: 'MCP client', ru: 'Клиент',
+        note: 'Библиотека внутри приложения: мост к серверам, а не отдельный сервис.',
+        detail: {
+          what: 'Точка доступа ко всем инструментам подключённых серверов.',
+          how: [
+            'Берёт на себя обмен сообщениями и детали протокола.',
+            'Два основных типа сообщений: список инструментов и вызов инструмента.',
+            'В Claude Code роль приложения и клиента играет сам Claude Code — тогда пишешь только сервер.',
+          ],
+          example: `ListToolsRequest  → ListToolsResult\nCallToolRequest   → CallToolResult`,
+          mistake: 'Представлять клиента отдельным сервисом. Это библиотека в твоём приложении; на схемах его рисуют отдельно только ради ролей.',
+          remember: 'Клиент — часть приложения, а не узел архитектуры.',
+        },
+      },
+      {
+        en: 'Inspector', ru: 'Инспектор',
+        note: 'mcp dev mcp_server.py — проверка сервера без приложения.',
+        detail: {
+          what: 'Браузерный интерфейс для ручной проверки сервера.',
+          how: [
+            'Подключается к серверу и показывает его инструменты, ресурсы и сценарии.',
+            'Любой инструмент можно вызвать руками и увидеть результат.',
+            'Состояние между вызовами сохраняется: цепочку «изменить и прочитать» видно целиком.',
+            'Через агента отлаживать дольше: там два слоя неопределённости сразу.',
+          ],
+          example: 'mcp dev mcp_server.py\n→ http://127.0.0.1:6274',
+          mistake: 'Искать причину в формулировках, не проверив сервер инспектором. Половина проблем структурные.',
+          remember: 'Сначала инспектор, потом агент.',
+        },
+      },
+      {
+        en: 'Три SDK', ru: 'Что не путать',
+        note: 'Anthropic SDK · Claude Agent SDK · MCP SDK — разные вещи.',
+        detail: {
+          what: 'Три библиотеки с похожими названиями, которые на экзамене легко перепутать.',
+          how: [
+            'Anthropic SDK — обёртка над Claude API: запросы к модели.',
+            'Claude Agent SDK — Claude Code библиотекой: агентный цикл, встроенные инструменты, субагенты.',
+            'MCP SDK — реализация протокола: серверная и клиентская части.',
+            'API — это контракт, SDK — инструмент работы с ним на твоём языке.',
+          ],
+          example: '',
+          mistake: 'Называть MCP SDK способом «вызывать Claude». Он про протокол, а не про модель.',
+          remember: 'Разные SDK решают разные задачи — путаница стоит балла.',
+        },
+      },
+    ],
+    check: [
+      { q: 'Without MCP, what is the main problem when building a chat app over the GitHub API?', a: 'You would have to write and maintain all the GitHub tool schemas and functions yourself.' },
+      { q: 'What two parts make up a tool, and who writes them with MCP?', a: 'A schema the model reads and a function that executes; with MCP both are already written inside the MCP server.' },
+      { q: 'Which message type asks a server what tools it has?', a: 'ListToolsRequest, answered with ListToolsResult.' },
+      { q: 'What is the easiest way to test an MCP server before connecting an application?', a: 'The built-in inspector: mcp dev mcp_server.py.' },
+      { q: 'Users click a button to trigger a summarize-document workflow. Which primitive?', a: 'Prompts — the user controls when the workflow starts.' },
+      { q: 'You need a resource that fetches documents by id, like docs://documents/report.pdf. Which kind?', a: 'A templated resource with parameters in the URI.' },
+      { q: 'Who controls tools, resources and prompts respectively?', a: 'Tools serve the model, resources serve the application, prompts serve the user.' },
+      { q: 'Does Claude talk to the MCP server directly?', a: 'No. Claude names the tool; your code executes it through the MCP client, and the agent loop lives in your application.' },
+      { q: 'What is the easiest way to define a tool with the Python MCP SDK?', a: 'Decorate a normal function with @mcp.tool() — the schema is generated from type hints and field descriptions.' },
+      { q: 'Is MCP the same as tool use?', a: 'No. Tool use is how Claude calls tools; MCP is who provides their schemas and implementations.' },
+    ],
+  },
+
+  'course-api': {
+    title: 'Claude with the Anthropic API',
+    intro: 'Запросы, оценка промптов, приёмы промптинга, tool use и RAG — курс целиком.',
     source: 'Partner Academy — Claude with the Anthropic API',
     domain: 'D2',
-    outline: [
-      'Доступ к API: запрос, диалог, system prompt, температура, streaming',
-      'Prompt evaluation: датасеты, пайплайн, грейдеры',
-      'Приёмы промптинга',
-      'Tool use: схемы, tool_result, несколько ходов',
-      'RAG и агентный поиск',
-      'Features of Claude',
+    points: [
+      {
+        t: 'Минимум запроса — четыре вещи',
+        d: 'Ключ, имя модели, сообщения и max_tokens. Всё остальное — надстройки над этим набором.',
+      },
+      {
+        t: 'Модель не помнит прошлых сообщений',
+        d: '«А какие начинки популярны?» после вопроса про пиццу не сработает, если историю не прислать: диалог ведёшь ты, а не сервер.',
+      },
+      {
+        t: 'Низкая температура — для фактических ответов',
+        d: 'Там, где нужна повторяемость, берут значение около нуля. Разнообразие нужно в идеях и формулировках, а не в справочнике.',
+      },
+      {
+        t: 'Один удачный запуск — не проверка',
+        d: 'Промпт, протестированный один раз и выкаченный в прод, ломается на первом же неожиданном вводе. Отсюда весь блок про evals.',
+      },
+      {
+        t: 'Процесс оценки: датасет → прогон → грейдер',
+        d: 'Тест-кейсы можно сгенерировать моделью побыстрее, ответы прогнать через грейдер. У модели-судьи просят не только оценку, но и сильные стороны, слабые и обоснование.',
+      },
+      {
+        t: 'Примеры лечат то, что не лечат инструкции',
+        d: 'Классический случай: модель не распознаёт сарказм. Описание проблемы не помогает, несколько размеченных примеров — помогают.',
+      },
+      {
+        t: 'Порядок tool use всегда один',
+        d: 'Исходный запрос → запрос вызова → получение данных → финальный ответ. Признак продолжения — stop_reason со значением tool_use.',
+      },
+      {
+        t: 'RAG меняет простоту на масштабируемость',
+        d: 'Документ влезает в промпт — RAG лишняя сложность. Не влезает, или документов много, или важны цена и скорость — режем заранее и кладём только нужные куски.',
+      },
+      {
+        t: 'Плохая нарезка ломает весь RAG',
+        d: 'Вопрос про багфиксы вытащит медицинский раздел, если там тоже встретилось слово bug. В промпт уедет не тот контекст, и ответ будет уверенно неправильным.',
+      },
     ],
-  }),
+    terms: [
+      {
+        en: 'Minimal request', ru: 'Минимальный запрос',
+        note: 'Ключ, модель, messages и max_tokens — всё остальное надстройки.',
+        detail: {
+          what: 'Набор обязательных полей, без которых запрос не уйдёт.',
+          how: [
+            'Ключ передаётся заголовком, а не в теле запроса.',
+            'Модель — точная строка идентификатора.',
+            'messages — весь диалог; max_tokens — потолок ответа.',
+            'Ключ хранят на сервере или в переменных окружения, а не в коде фронтенда.',
+          ],
+          example: '',
+          mistake: 'Держать ключ в клиентском коде веб-приложения. Его достанут из сетевых запросов.',
+          remember: 'Четыре поля — и запрос уже рабочий.',
+        },
+      },
+      {
+        en: 'Streaming', ru: 'Потоковый ответ',
+        note: 'Лечит ощущение «приложение тормозит».',
+        detail: {
+          what: 'Выдача ответа частями по мере генерации.',
+          how: [
+            'Без него пользователь двадцать секунд смотрит на спиннер, а потом получает всё разом.',
+            'С ним первые слова появляются почти сразу — общее время то же, ощущение другое.',
+            'Для длинных ответов это ещё и защита от таймаута.',
+          ],
+          example: '',
+          mistake: 'Оптимизировать общее время ответа, когда жалоба на самом деле про паузу до первых слов.',
+          remember: 'Ощущение скорости — это время до первого токена.',
+        },
+      },
+      {
+        en: 'Model grader', ru: 'Модель-судья',
+        note: 'Оценивает ответы там, где нет точного эталона.',
+        detail: {
+          what: 'Способ оценивать качество, когда сравнение строк не работает.',
+          how: [
+            'Просят не только оценку, но и сильные стороны, слабые и обоснование — иначе все оценки сваливаются в середину шкалы.',
+            'Тест-кейсы для прогона удобно генерировать моделью побыстрее.',
+            'Код-грейдер остаётся предпочтительным везде, где ответ проверяется формально.',
+          ],
+          example: '',
+          mistake: 'Просить голую оценку от одного до десяти. Получишь стабильные семёрки без смысла.',
+          remember: 'Судье нужны критерии и обоснование, а не только шкала.',
+        },
+      },
+      {
+        en: 'Few-shot', ru: 'Примеры в промпте',
+        note: 'Пары «вход → выход» вместо описания желаемого поведения.',
+        detail: {
+          what: 'Приём, который правит поведение быстрее любых инструкций.',
+          how: [
+            'Показывают разметку на сложных случаях: сарказм, двусмысленности, редкие форматы.',
+            'Одношаговый и многошаговый варианты различаются только числом примеров.',
+            'Работает в паре с XML-разметкой, которая отделяет примеры от данных.',
+          ],
+          example: '',
+          mistake: 'Объяснять словами то, что проще показать примером. На неоднозначных случаях описание не работает.',
+          remember: 'Не объясняй поведение — покажи его.',
+        },
+      },
+      {
+        en: 'Tool use workflow', ru: 'Порядок вызова инструментов',
+        note: 'Запрос → запрос вызова → данные → финальный ответ.',
+        detail: {
+          what: 'Последовательность, которую спрашивают прямо.',
+          how: [
+            'Ответ приходит многоблочным: текст плюс блоки запросов вызова.',
+            'Признак продолжения — stop_reason со значением tool_use.',
+            'JSON Schema говорит модели, какие аргументы принимает твоя функция.',
+            'Встроенные инструменты отличаются тем, что схему даёт провайдер, но часть реализации всё равно может быть на тебе.',
+          ],
+          example: '',
+          mistake: 'Определять «нужен ли ещё вызов» по содержимому текста. Для этого есть stop_reason.',
+          remember: 'Четыре шага и одно поле, по которому видно продолжение.',
+        },
+      },
+      {
+        en: 'RAG tradeoff', ru: 'Размен RAG',
+        note: 'Простота против масштабируемости.',
+        detail: {
+          what: 'Решение о том, нужен ли вообще поиск.',
+          how: [
+            'Всё в промпт: просто, но упирается в лимит, дороже, медленнее и хуже на длинных текстах.',
+            'RAG: нарезка заранее плюс поиск на каждый вопрос.',
+            'Берут при больших или многочисленных документах и там, где важны цена и скорость.',
+            'Документ влезает целиком — RAG может оказаться лишней сложностью.',
+          ],
+          example: '',
+          mistake: 'Строить RAG под документ на двадцать страниц. Он спокойно влезает в промпт.',
+          remember: 'RAG — за масштаб, а не за моду.',
+        },
+      },
+    ],
+    check: [
+      { q: 'What is the minimum information a request to the API must include?', a: 'API key, model name, messages, and max tokens.' },
+      { q: 'Claude does not understand a follow-up question. What is the problem?', a: 'It does not remember previous messages — the history must be sent with every request.' },
+      { q: 'What is the first thing Claude does with your text?', a: 'Breaks it into smaller chunks called tokens.' },
+      { q: 'Users stare at a spinner for 20 seconds, then all text appears at once. What fixes this?', a: 'Enabling response streaming.' },
+      { q: 'Which temperature suits a factual Q&A app?', a: 'A low temperature, near 0.' },
+      { q: 'You tested a prompt once and shipped it. What is the main risk?', a: 'Users will provide unexpected inputs that break it.' },
+      { q: 'Which model should generate your evaluation test cases?', a: 'A faster, cheaper model such as Haiku.' },
+      { q: 'What should you ask a model grader for besides the score?', a: 'Strengths, weaknesses, and reasoning.' },
+      { q: 'Claude keeps missing sarcastic comments. Best fix?', a: 'Provide examples showing sarcastic posts labeled correctly.' },
+      { q: 'What is the main purpose of XML tags in prompts?', a: 'To add structure and clarity, especially with large amounts of content.' },
+      { q: 'How can you tell Claude wants another tool call?', a: 'The stop_reason field is tool_use.' },
+      { q: 'What is the correct tool use sequence?', a: 'Initial request, tool request, data retrieval, final response.' },
+      { q: 'When is RAG the wrong choice?', a: 'When the document fits comfortably in the prompt — then it is extra complexity for nothing.' },
+    ],
+  },
+
 };
 
 /* ── Индекс и хелперы ─────────────────────────────────────── */

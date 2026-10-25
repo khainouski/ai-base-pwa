@@ -24,6 +24,7 @@ export function topicBrief(topicId) {
   for (const term of t.terms || []) lines.push(`Term: ${term.en} = ${term.ru}${term.note ? ` — ${term.note}` : ''}`);
   for (const c of t.commands || []) lines.push(`Command: ${c.cmd} — ${c.what}`);
   for (const qa of t.qa || []) lines.push(`Known Q&A: ${qa.q} → ${qa.a}`);
+  for (const x of t.check || []) lines.push(`Exam-style check: ${x.q} → ${x.a}`);
   if (t.diagram?.caption) lines.push(`Diagram on the page: ${t.diagram.caption}`);
   for (const c of t.code || []) lines.push(`Code example — ${c.title}:\n${c.body}`);
   for (const x of t.outline || []) lines.push(`Planned, not written yet: ${x}`);

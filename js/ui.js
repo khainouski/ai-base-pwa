@@ -176,6 +176,19 @@ const outlineBlock = (outline) => `
     ${outline.map((x) => `<li>${esc(x)}</li>`).join('')}
   </ul>`;
 
+/*
+ * Проверочные вопросы — по-английски, как на экзамене: ответ скрыт под
+ * вопросом, чтобы сначала вспомнить, а потом свериться.
+ */
+const checkBlock = (items) => `
+  <div class="qa">
+    ${items.map((x) => `
+      <details class="qa-item">
+        <summary>${esc(x.q)}</summary>
+        <div class="qa-answer">${esc(x.a)}</div>
+      </details>`).join('')}
+  </div>`;
+
 const section = (title, body, count = '') => (body ? `
   <div class="section-title">${esc(title)}${count ? ` <span class="sec-count">${esc(count)}</span>` : ''}</div>
   ${body}` : '');
@@ -197,6 +210,7 @@ export function topicBody(t, { learned = [], cards = false, topicId = '' } = {})
     ${section('Команды', t.commands?.length ? commandsBlock(t.commands) : '')}
     ${section('Код', t.code?.length ? codeBlock(t.code) : '')}
     ${section('Ссылки', t.links?.length ? linksBlock(t.links) : '')}
+    ${section('Check yourself', t.check?.length ? checkBlock(t.check) : '', String(t.check?.length || ''))}
     ${section('Что будет на странице', t.outline?.length ? outlineBlock(t.outline) : '')}`;
 }
 
