@@ -38,6 +38,9 @@ export async function renderHome(root) {
     <div class="list-label">Claude</div>
     ${rowList(sectionsOf('claude').map(row))}
 
+    <div class="list-label">Spec-Driven Development</div>
+    ${rowList(sectionsOf('sdd').map(row))}
+
     <div class="list-label">Практика</div>
     ${rowList([{
     href: '#/exam',
