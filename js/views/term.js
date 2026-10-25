@@ -28,7 +28,7 @@ import { crumbs, esc, errorBox, loading, mdLite, toast } from '../ui.js';
  */
 const MODES = [
   { id: 'explain', label: 'Разобрать', loading: 'Разбираю…', main: 'Другими словами', extra: 'Почему это важно' },
-  { id: 'example', label: 'Ещё пример', loading: 'Придумываю пример…', main: 'Пример', extra: 'На что смотреть' },
+  { id: 'implementation', label: 'Реализация', loading: 'Пишу пример…', main: 'Как это пишется', extra: 'Почему так' },
   { id: 'pitfall', label: 'Где ошибаются', loading: 'Ищу ловушку…', main: 'Ошибка', extra: 'Как правильно' },
 ];
 
@@ -52,6 +52,11 @@ function detailBlock(detail) {
       ${part('Что это', detail.what ? `<p class="td-what">${esc(detail.what)}</p>` : '')}
       ${part('Как устроено', detail.how?.length
     ? `<ul class="td-list">${detail.how.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : '')}
+      ${part('Как это пишется', detail.impl ? `
+        ${detail.impl.file ? `<div class="td-file">${esc(detail.impl.file)}</div>` : ''}
+        <pre class="td-example">${esc(detail.impl.body)}</pre>
+        ${detail.impl.notes?.length
+    ? `<ul class="td-list td-notes">${detail.impl.notes.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}` : '')}
       ${part('Пример', detail.example ? `<pre class="td-example">${esc(detail.example)}</pre>` : '')}
       ${part('Частая ошибка', detail.mistake ? `<p class="td-text">${esc(detail.mistake)}</p>` : '')}
       ${detail.remember ? `<p class="td-remember">${esc(detail.remember)}</p>` : ''}

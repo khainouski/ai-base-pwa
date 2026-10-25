@@ -41,7 +41,8 @@ const termContext = (topicId, term) => {
   const d = term.detail;
   const notes = Array.isArray(d)
     ? d
-    : [d?.what, ...(d?.how || []), d?.example, d?.mistake, d?.remember].filter(Boolean);
+    : [d?.what, ...(d?.how || []), d?.example, d?.impl?.body, ...(d?.impl?.notes || []),
+      d?.mistake, d?.remember].filter(Boolean);
   return `${topicBrief(topicId)}
 
 The term in question: ${term.en} (${term.ru})${term.note ? ` — ${term.note}` : ''}
@@ -58,8 +59,10 @@ ${notes.map((x) => `Already written in the notes: ${x}`).join('\n')}`;
 const TERM_MODES = {
   explain: `Explain the term again, differently from the notes: another angle, another analogy.
 "main": the explanation, 2–3 sentences. "extra": why it matters in practice, one sentence.`,
-  example: `Give ONE fresh example — not the one already in the notes.
-"main": the example itself (a short snippet, a command, or a small situation). "extra": what exactly to look at in it.`,
+  implementation: `Show how this is actually written: a complete, working artifact — a file, a config block, a command with its flags, a short function — not a fragment.
+"main": the artifact itself, as plain text, with short inline comments where they help. Keep every line under 52 characters: this is read on a phone.
+"extra": two or three sentences on why the parts are the way they are — what breaks if each is wrong.
+If the notes already contain such an artifact, write a different one: another use case, another shape.`,
   pitfall: `Describe a mistake with this term that is NOT the one already written in the notes.
 "main": the mistake and how it shows up. "extra": what to do instead, one sentence.`,
 };
