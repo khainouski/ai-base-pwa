@@ -82,7 +82,7 @@ export const TOPICS = {
   llm: {
     title: 'LLM Fundamentals',
     intro: 'Как модель получает ответ, сколько видит за раз и во что это обходится.',
-    domain: 'D2',
+    domain: 'D5',
     diagram: {
       caption: 'Что уходит в модель на каждом запросе.',
       read: [
@@ -1058,7 +1058,7 @@ return "упёрлись в потолок"    // результат, не ис�
   mcp: {
     title: 'MCP',
     intro: 'Один стандартный разъём вместо интеграции каждого клиента с каждым источником.',
-    domain: 'D3',
+    domain: 'D2',
     diagram: {
       caption: 'Девять самописных связок слева — три плюс три реализации протокола справа.',
       read: [
@@ -1294,7 +1294,7 @@ if __name__ == "__main__":
   rag: {
     title: 'RAG',
     intro: 'Найти нужное и положить в контекст — вместо надежды, что модель это помнит.',
-    domain: 'D3',
+    domain: 'D5',
     diagram: {
       caption: 'Путь одного вопроса до ответа.',
       read: [
@@ -2653,7 +2653,6 @@ console.log(ok + " из " + cases.length);`,
   'claude-work': {
     title: 'Работа в продукте',
     intro: 'Проекты, артефакты, коннекторы — то, чем Claude отличается от окна с чатом.',
-    domain: 'D2',
     points: [
       {
         t: 'Проект — это общий контекст',
@@ -2786,7 +2785,7 @@ console.log(ok + " из " + cases.length);`,
   'claude-skills': {
     title: 'Agent Skills',
     intro: 'Как записать «мы делаем это так» один раз и получать это каждый раз.',
-    domain: 'D1',
+    domain: 'D3',
     points: [
       {
         t: 'Скилл — папка, а не настройка',
@@ -2953,6 +2952,7 @@ allowed-tools: Bash(git log:*), Bash(gh pr:*),
   'cc-commands': {
     title: 'Команды',
     intro: 'Важные команды и как ими пользоваться. Выверено по claude --help.',
+    domain: 'D3',
     points: [
       {
         t: 'Папка запуска задаёт контекст',
@@ -3165,7 +3165,7 @@ claude rm deps         # и убрать сессию с worktree`,
   'cc-config': {
     title: 'Конфигурация',
     intro: 'Чем настраивается поведение агента в репозитории: правила, права, хуки, плагины.',
-    domain: 'D1',
+    domain: 'D3',
     points: [
       {
         t: 'CLAUDE.md — правила, а не документация',
@@ -3386,28 +3386,123 @@ model: opus
   /* ── CCAR-F: экзамен ───────────────────────────────────── */
   'exam-domains': {
     title: 'Домены экзамена',
-    intro: 'Пять доменов с весами — рамка, в которой читается всё остальное.',
-    source: 'Claude Certified Architect – Foundations Exam Guide',
+    intro: 'Пять доменов с весами и формат сдачи — рамка, в которой читается всё остальное.',
+    source: 'Claude Certified Architect – Foundations Exam Guide (июль 2026)',
     points: [
-      { t: 'Проходной балл', d: '720 из 1000.' },
-      { t: 'Где основной вес', d: 'Domain 1 (27%) и Domain 4 (20%) — почти половина экзамена.' },
-      { t: 'Что проверяют', d: 'Не память, а решение: почему именно этот вариант в этой ситуации.' },
+      {
+        t: '60 вопросов за 120 минут',
+        d: 'Формат — сценарные вопросы с одним или несколькими верными ответами. Определения не спрашивают: дана ситуация и четыре правдоподобных варианта.',
+      },
+      {
+        t: 'Проходной балл — 720 по шкале 100–1000',
+        d: 'Это не процент правильных ответов: баллы шкалированы. Проваливать отдельный домен допустимо, пока общий результат дотягивает до 720.',
+      },
+      {
+        t: 'Почти половина экзамена — два домена',
+        d: 'Agentic Architecture & Orchestration даёт 27%, Claude Code Configuration & Workflows и Prompt Engineering & Structured Output — по 20%.',
+      },
+      {
+        t: 'Несколько вариантов обычно рабочие',
+        d: 'Три из четырёх решают задачу, просто хуже: дороже, менее надёжно, с лишним звеном. Выигрывает тот, кто объясняет, почему остальные хуже.',
+      },
     ],
-    qa: [
-      { q: 'Сколько нужно набрать?', a: '720 из 1000.' },
-      { q: 'Какой домен самый тяжёлый по весу?', a: 'Domain 1 — Agentic Architecture & Orchestration, 27%.' },
+    terms: [
+      {
+        en: 'Domain 1 · Agentic Architecture & Orchestration', ru: '27%',
+        note: 'Оркестратор и субагенты, параллельность, восстановление, границы ошибок.',
+        detail: {
+          what: 'Самый тяжёлый домен: архитектура агентных систем.',
+          how: [
+            'Координатор и специалисты: кто решает, кто исполняет, кто собирает.',
+            'Параллельный запуск независимой работы и сборка результата.',
+            'Восстановление после падения и передача данных между агентами.',
+            'Где обрабатывать ошибку — в субагенте или наверху.',
+          ],
+          example: '',
+          mistake: 'Готовиться к нему по продуктовым курсам. Нужны разделы AI Agents, Multi-Agent Systems и AI System Design.',
+          remember: 'Четверть экзамена — про то, кто кем управляет.',
+        },
+      },
+      {
+        en: 'Domain 2 · Tool Design & MCP Integration', ru: '18%',
+        note: 'Схемы инструментов, описания, ошибки, MCP-серверы, Batch API.',
+        detail: {
+          what: 'Проектирование инструментов и интеграций.',
+          how: [
+            'Описание инструмента как механизм выбора, а не документация.',
+            'Как возвращать ошибки: tool_result с флагом против исключения.',
+            'Зависимости между инструментами, гонки и атомарность.',
+            'MCP: что даёт сервер и чего стоят подключённые серверы в контексте.',
+          ],
+          example: '',
+          mistake: 'Учить MCP как продукт. Спрашивают проектные решения: описания, ошибки, границы инструментов.',
+          remember: 'Инструмент начинается с описания и заканчивается обработкой ошибки.',
+        },
+      },
+      {
+        en: 'Domain 3 · Claude Code Configuration & Workflows', ru: '20%',
+        note: 'CLAUDE.md, скиллы, хуки, права, сессии, поиск по коду.',
+        detail: {
+          what: 'Настройка и ежедневная работа в Claude Code.',
+          how: [
+            'Местный и общий слои конфигурации: что едет в репозиторий, а что нет.',
+            'Скилл против CLAUDE.md против хука: по требованию, всегда, на событие.',
+            'Режимы прав и когда брать режим плана.',
+            'Поиск по коду: Grep против Glob и работа с большими модулями через субагентов.',
+          ],
+          example: '',
+          mistake: 'Считать это «про интерфейс». Вопросы здесь практические: почему у новичка не работает то, что работает у троих.',
+          remember: 'Пятая часть экзамена — про конфигурацию и рабочие сценарии.',
+        },
+      },
+      {
+        en: 'Domain 4 · Prompt Engineering & Structured Output', ru: '20%',
+        note: 'Ясность, примеры, структура, схемы ответа и работа с неопределённостью.',
+        detail: {
+          what: 'Формулировки и формат ответа.',
+          how: [
+            'Few-shot на неоднозначных случаях, а не на идеальных.',
+            'Схема ответа вместо разбора текста регулярками.',
+            'Поля, допускающие пустоту: иначе модель выдумывает данные.',
+            'Разметка данных против инструкций — она же защита от инъекций.',
+          ],
+          example: '',
+          mistake: 'Готовиться советами уровня «будь конкретнее». Спрашивают про схемы: nullable-поля, категории для неуверенности.',
+          remember: 'Схема ответа — такая же часть промптинга, как формулировка.',
+        },
+      },
+      {
+        en: 'Domain 5 · Context Management & Reliability', ru: '15%',
+        note: 'Окно контекста, кэш, компактизация, частичный результат, трейсы.',
+        detail: {
+          what: 'Что происходит с контекстом и что бывает, когда ломается.',
+          how: [
+            'Почему длинный диалог дорожает и как это лечится.',
+            'Кэш префикса и то, что его обнуляет.',
+            'Сжатие истории и вычистка устаревших результатов инструментов.',
+            'Частичный результат, идемпотентность при повторах, трейсы прогона.',
+          ],
+          example: '',
+          mistake: 'Думать, что это про размер окна. Это про то, чем наполняется контекст и что остаётся после сбоя.',
+          remember: 'Надёжность — это управление контекстом плюс поведение при отказе.',
+        },
+      },
     ],
     check: [
-      { q: 'What score do you need to pass?', a: '720 out of 1000.' },
-      { q: 'Which domain carries the most weight?', a: 'Domain 1, Agentic Architecture and Orchestration, at 27%.' },
-      { q: 'Which two domains together make up almost half the exam?', a: 'Domain 1 (27%) and Domain 4, Prompt Engineering (20%).' },
-      { q: 'What does the exam actually test?', a: 'Judgment in scenarios — why one architecture fits a situation better than the alternatives, not recall of definitions.' },
+      { q: 'How many questions, and how long?', a: '60 items in 120 minutes.' },
+      { q: 'What score do you need to pass?', a: '720 on a scale from 100 to 1000 — a scaled score, not a raw percentage.' },
+      { q: 'Do you have to pass every domain separately?', a: 'No — the overall scaled score is what counts.' },
+      { q: 'Which domain carries the most weight?', a: 'Agentic Architecture & Orchestration, at 27%.' },
+      { q: 'Which two domains follow it?', a: 'Claude Code Configuration & Workflows and Prompt Engineering & Structured Output, 20% each.' },
+      { q: 'What is the weight of Tool Design & MCP Integration and of Context Management & Reliability?', a: '18% and 15% respectively.' },
+      { q: 'What does the exam test?', a: 'Judgment in scenarios: several options work, but one is the best practice.' },
     ],
     links: [
       { title: 'Страница экзамена', href: 'https://anthropic-partners.skilljar.com/claude-certified-architect-foundations-certification/486716' },
       { title: 'План EPAM', href: 'https://leap.epam.com/sp/partners/anthropic/architect-foundation-certification' },
     ],
   },
+
   'exam-rules': {
     title: 'Правила и формат',
     intro: 'Как устроены вопросы и что считается нарушением.',
@@ -3840,7 +3935,7 @@ model: opus
     title: 'Claude Code in Action',
     intro: 'Длинные сессии, режимы прав, хуки, автоматизация и плагины.',
     source: 'Partner Academy — Claude Code in Action',
-    domain: 'D1',
+    domain: 'D3',
     points: [
       {
         t: 'Сначала очертить объём, потом править курс',
@@ -4013,7 +4108,7 @@ claude --resume \\
     title: 'Introduction to Agent Skills',
     intro: 'Как записать повторяющееся один раз: создание, конфигурация, раздача, отладка.',
     source: 'Partner Academy — Introduction to Agent Skills',
-    domain: 'D1',
+    domain: 'D3',
     points: [
       {
         t: 'Объясняешь одно и то же дважды — напрашивается скилл',
@@ -4186,7 +4281,7 @@ model: sonnet
     title: 'Introduction to MCP',
     intro: 'Протокол, сервер, клиент и три примитива — плюс практический проект на stdio.',
     source: 'Partner Academy — Introduction to MCP',
-    domain: 'D3',
+    domain: 'D2',
     points: [
       {
         t: 'MCP снимает с тебя написание интеграций',
@@ -4386,7 +4481,7 @@ def fetch_doc(doc_id: str) -> str:
     title: 'Claude with the Anthropic API',
     intro: 'Запросы, оценка промптов, приёмы промптинга, tool use и RAG — курс целиком.',
     source: 'Partner Academy — Claude with the Anthropic API',
-    domain: 'D2',
+    domain: 'D4',
     points: [
       {
         t: 'Минимум запроса — четыре вещи',
