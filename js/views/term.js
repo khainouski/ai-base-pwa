@@ -57,7 +57,9 @@ function detailBlock(detail) {
         <pre class="td-example">${esc(detail.impl.body)}</pre>
         ${detail.impl.notes?.length
     ? `<ul class="td-list td-notes">${detail.impl.notes.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}` : '')}
-      ${part('Пример', detail.example ? `<pre class="td-example">${esc(detail.example)}</pre>` : '')}
+      ${/* Короткий пример показывается, только когда нет полной реализации:
+            иначе они пересказывают друг друга. */''}
+      ${part('Пример', !detail.impl && detail.example ? `<pre class="td-example">${esc(detail.example)}</pre>` : '')}
       ${part('Частая ошибка', detail.mistake ? `<p class="td-text">${esc(detail.mistake)}</p>` : '')}
       ${detail.remember ? `<p class="td-remember">${esc(detail.remember)}</p>` : ''}
     </div>`;
